@@ -1,0 +1,31 @@
+{% extends "cursos/base.html" %}
+
+{% block title %}
+  <h1>Iniciar Sesión</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    {% if form.errors %}
+    <p>Tu usuario y/o contraseña son incorrectos. Por favor inténtalo de nuevo.</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'django.contrib.auth.views.login' %}" role="form">
+    {% csrf_token %}
+      <div class="form-group">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+      </div>
+      <div class="form-group">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+      </div>
+
+      <input type="submit" value="login" />
+      <input type="hidden" name="next" value="{{ next }}" />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

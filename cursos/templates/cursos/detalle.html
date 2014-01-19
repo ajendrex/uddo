@@ -1,0 +1,34 @@
+{% extends "cursos/base.html" %}
+
+{% block title %}
+    <h1>{{curso.codigo}} - {{ curso.nombre }}</h1>
+{% endblock %}
+
+{% block content %}
+{% if mensaje_de_error %}
+  <p><strong>{{ mensaje_de_error }}</strong></p>
+{% endif %}
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <ul>
+    {% for comentario in curso.comentariocurso_set.all %}
+      <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_comentario|date:"DATE_FORMAT" }}</small></li>
+    {% endfor %}
+    </ul>
+
+    <form action="{% url 'cursos:comentar' curso.id %}" method="post" role="form">
+    {% csrf_token %}
+      <div class="form-group">
+      <label for="texto">Comentario</label>
+      <input id="texto" type="text" name="texto" placeholder="Nuevo Comentario" class="form-control"/>
+      </div>
+      <div class="form-group">
+      <label for="texto">Fecha</label>
+      <input id="fecha" type="datetime" name="fecha" placeholder="YYYY-MM-DD" class="form-control"/>
+      </div>
+      <input type="submit" value="Comentar" class="btn btn-default"/>
+    </form>
+  </div>
+</div>
+{% endblock %}
