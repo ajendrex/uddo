@@ -1,5 +1,8 @@
 {% extends "cursos/base.html" %}
 
+{% block sesion %}
+{% endblock %}
+
 {% block title %}
   <h1>Iniciar Sesión</h1>
 {% endblock %}
@@ -21,11 +24,18 @@
         {{ form.password.label_tag }}
         {{ form.password }}
       </div>
-
-      <input type="submit" value="login" />
+      <input type="submit" value="Entrar" class="btn btn-default" style="float:right"/>
       <input type="hidden" name="next" value="{{ next }}" />
       </div>
     </form>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+  $("#id_username").addClass("form-control");
+  $("#id_password").addClass("form-control");
+</script>
 {% endblock %}

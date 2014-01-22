@@ -15,17 +15,22 @@
   <body>
 
     <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div style="float:right">
-          {% if user.is_authenticated %}
-            <p>{{ user.username }} <a href="/logout?next={{ request.get_full_path }}">Cerrar Sesión</a></p>
-          {% else %}
-            <a href="/login?next={{ request.get_full_path }}">Iniciar Sesión</a>
-          {% endif %}
-          </div>
+      {% block sesion %}
+      <div class="row" style="background-color:#002a4f; color:#ffffff; padding:5px">
+        {% if user.is_authenticated %}
+        <div class="col-md-4">
+            <div>{{ user.first_name }} {{ user.last_name }}</div>
         </div>
+        <div class="col-md-2 col-md-offset-6">
+            <div style="float:right"><a href="/logout?next={{ request.get_full_path }}" style="color:#cccccc">Cerrar Sesión</a></div>
+        </div>
+        {% else %}
+        <div class="col-md-2 col-md-offset-10">
+            <div style="float:right"><a href="/login?next={{ request.get_full_path }}" style="color:#cccccc">Iniciar Sesión</a></div>
+        </div>
+        {% endif %}
       </div>
+      {% endblock %}
       <div class="row">
         <div class="col-md-6 col-md-offset-3">
           {% block title %}{% endblock %}
@@ -34,7 +39,9 @@
       {% block content %}{% endblock %}
     </div>
 
+    {% block scripts %}
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="{% static "uddo/js/bootstrap.min.js" %}"></script>
+    {% endblock %}
   </body>
 </html>

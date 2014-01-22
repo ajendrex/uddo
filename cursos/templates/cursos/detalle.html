@@ -11,6 +11,22 @@
 
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
+    <table class="table table-condensed" id="info-curso">
+      <tr>
+        <th>Diseñador(a) Instruccional</th>
+        <td colspan="3">{{ curso.owner.get_full_name }}</td>
+      </tr>
+      <tr>
+        <th>Profesor Diseñador</th>
+        <td colspan="3">{{ curso.profesor.get_full_name }}</td>
+      </tr>
+      <tr>
+        <th>Fecha de Creación:</th>
+        <td>{{ curso.fec_creacion|date:"DATE_FORMAT" }}</td>
+        <th>Última Actualización:</th>
+        <td>{{ curso.fec_modification|date:"DATE_FORMAT" }}</td>
+      </tr>
+    </table>
     <ul>
     {% for comentario in curso.comentariocurso_set.all %}
       <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_comentario|date:"DATE_FORMAT" }}</small></li>

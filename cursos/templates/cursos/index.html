@@ -5,13 +5,30 @@
 {% endblock %}
 
 {% block content %}
-{% if latest_cursos_list %}
-    <ul>
-    {% for curso in latest_cursos_list %}
-        <li><a href="{% url 'cursos:detalle' curso.id %}">{{ curso.codigo }} - {{ curso.nombre }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No hay cursos disponibles.</p>
-{% endif %}
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+    {% if latest_cursos_list %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>DI</th>
+            </tr>
+          </thead>
+          <tbody>
+        {% for curso in latest_cursos_list %}
+            <tr>
+              <td><a href="{% url 'cursos:detalle' curso.id %}">{{ curso.codigo }}</a></td>
+              <td>{{ curso.nombre }}</td>
+              <td>{{ curso.owner.first_name }} {{ curso.owner.last_name }}</td>
+            </tr>
+        {% endfor %}
+          </tbody>
+        </table>
+    {% else %}
+        <p>No hay cursos disponibles.</p>
+    {% endif %}
+    </div>
+  </div>
 {% endblock content %}
