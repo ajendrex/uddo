@@ -1,0 +1,8 @@
+<VirtualHost *:80>
+  ServerName archivos.uddo.local
+  DocumentRoot /srv/http/uddo/
+  ErrorLog /var/log/httpd/archivos_uddo_error.log
+  CustomLog /var/log/httpd/archivos_uddo_access.log combined
+  LogLevel warn
+</VirtualHost>
+

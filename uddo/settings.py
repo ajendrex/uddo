@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-MEDIA_DIR = "/srv/http/uddo/"
-MEDIA_URL = "archivos.uddo.local/"
+MEDIA_ROOT = "/srv/http/uddo/"
+MEDIA_URL = "http://archivos.uddo.local/"
 
 
 # Quick-start development settings - unsuitable for production

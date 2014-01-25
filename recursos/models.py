@@ -7,7 +7,7 @@ from cursos.models import Curso
 # Create your models here.
 class Recurso(models.Model):
   nombre = models.CharField(max_length = 100)
-  curso = models.ForeignKey(Curso)
+  curso = models.ForeignKey(Curso, null=True)
   creador = models.ForeignKey(User, related_name = "recursos_di")
   tipo = models.CharField(max_length = 3,
                           choices = (('INT', "Interactivo"),
@@ -24,11 +24,14 @@ class Recurso(models.Model):
                                           ('M', "Medio"),
                                           ('F', "Full"),
                                           ('E', "Especial")))
-  proveedor = models.ForeignKey(User, null = True, related_name = "recursos_prov")
-  costo = models.IntegerField()
-  costoFinal = models.IntegerField()
-  descripcion = models.CharField(max_length = 5000)
-  link = models.CharField(max_length = 300)
+  proveedor = models.ForeignKey(User, null = True, blank=True, related_name = "recursos_prov")
+  costo = models.IntegerField(null=True, blank=True)
+  costoFinal = models.IntegerField(null=True, blank=True)
+  descripcion = models.CharField(max_length = 5000, blank=True)
+  link = models.CharField(max_length = 300, blank=True)
+
+  def __str__(self):
+    return self.nombre
 
 class InsumoRecurso(models.Model):
   archivo = models.FileField(upload_to="insumos/%Y/%m/%d/")
