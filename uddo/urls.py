@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^cursos/', include('cursos.urls', namespace='cursos')),
+    url(r'^recursos/', include('recursos.urls', namespace='recursos')),
     url(r'^login/$', 'django.contrib.auth.views.login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout'),
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

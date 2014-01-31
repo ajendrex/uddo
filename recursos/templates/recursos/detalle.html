@@ -1,0 +1,56 @@
+{% extends "recursos/base.html" %}
+
+{% block title %}
+    <h1>{{recurso.nombre}}</h1>
+{% endblock %}
+
+{% block content %}
+{% if mensaje_de_error %}
+  <p><strong>{{ mensaje_de_error }}</strong></p>
+{% endif %}
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <table class="table table-condensed" id="info-recurso">
+      <tr>
+        <th>Creador</th>
+        <td>{{ recurso.creador.get_full_name }}</td>
+      </tr>
+      <tr>
+        <th>Curso</th>
+        <td>{{ recurso.curso.codigo }} {{ recurso.curso.nombre }}</td>
+      </tr>
+      <tr>
+        <th>Tipo de Recurso</th>
+        <td>{{ recurso.tipo }}</td>
+      </tr>
+      <tr>
+        <th>Categoría</th>
+        <td>{{ recurso.categoria }}</td>
+      </tr>
+      <tr>
+        <th>Fecha de Creación:</th>
+        <td>{{ recurso.fecha_creacion|date:"DATE_FORMAT" }}</td>
+      </tr>
+    </table>
+    <ul>
+    {% for comentario in recurso.comentariorecurso_set.all %}
+      <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_comentario|date:"DATE_FORMAT" }}</small></li>
+    {% endfor %}
+    </ul>
+
+    <form action="{% url 'recursos:comentar' recurso.id %}" method="post" role="form">
+    {% csrf_token %}
+      <div class="form-group">
+      <label for="texto">Comentario</label>
+      <input id="texto" type="text" name="texto" placeholder="Nuevo Comentario" class="form-control"/>
+      </div>
+      <div class="form-group">
+      <label for="texto">Fecha</label>
+      <input id="fecha" type="datetime" name="fecha" placeholder="YYYY-MM-DD" class="form-control"/>
+      </div>
+      <input type="submit" value="Comentar" class="btn btn-default"/>
+    </form>
+  </div>
+</div>
+{% endblock %}

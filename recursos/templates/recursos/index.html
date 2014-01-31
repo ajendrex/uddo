@@ -1,0 +1,34 @@
+{% extends "recursos/base.html" %}
+
+{% block title %}
+  <h1>Mis Recursos</h1>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+    {% if recursos_list %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Curso</th>
+              <th>Fecha de Creación</th>
+            </tr>
+          </thead>
+          <tbody>
+        {% for recurso in recursos_list %}
+            <tr>
+              <td><a href="{% url 'recursos:detalle' recurso.id %}">{{ recurso.nombre }}</a></td>
+              <td>{{ recurso.curso.codigo }}</td>
+              <td>{{ recurso.fecha_creacion }}</td>
+            </tr>
+        {% endfor %}
+          </tbody>
+        </table>
+    {% else %}
+        <p>No hay recursos.</p>
+    {% endif %}
+    </div>
+  </div>
+{% endblock content %}

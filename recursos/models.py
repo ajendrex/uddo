@@ -29,6 +29,7 @@ class Recurso(models.Model):
   costoFinal = models.IntegerField(null=True, blank=True)
   descripcion = models.CharField(max_length = 5000, blank=True)
   link = models.CharField(max_length = 300, blank=True)
+  fecha_creacion = models.DateTimeField(auto_now_add = True)
 
   def __str__(self):
     return self.nombre
@@ -50,8 +51,8 @@ class FechaEntrega(models.Model):
   recurso = models.ForeignKey(Recurso)
 
 class ComentarioRecurso(models.Model):
-  owner = models.ForeignKey(User)
+  owner = models.ForeignKey(User, null=True)
   recurso = models.ForeignKey(Recurso)
   comentario = models.TextField()
-  fec_comentario = models.DateTimeField() #La fecha del comentario será de libre definición por el comentado
+  fec_comentario = models.DateTimeField() #La fecha del comentario será de libre definición por el comentador
   fec_creacion = models.DateTimeField(auto_now_add = True) #Esta fecha será la real en que se crea el comentario
