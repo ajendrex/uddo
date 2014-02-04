@@ -14,7 +14,7 @@
     <form action="{% url 'recursos:crearRecurso' %}" method="post" enctype="multipart/form-data" role="form">
     {% csrf_token %}
       {{ form.as_p }}
-      <input type="submit" value="Comentar" class="btn btn-default"/>
+      <input type="submit" value="Crear" class="btn btn-default"/>
     </form>
   </div>
 </div>

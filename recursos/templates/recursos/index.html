@@ -30,5 +30,12 @@
         <p>No hay recursos.</p>
     {% endif %}
     </div>
+    {% for grupo in request.user.groups.all %}
+      {% if "DI" == grupo.name %}
+        <div class="col-md-2">
+          <button class="btn btn-primary" onclick="javascript: top.open('{% url 'recursos:crearRecurso' %}', '_self')">Crear Recurso</button>
+        </div>
+      {% endif %}
+    {% endfor %}
   </div>
 {% endblock content %}

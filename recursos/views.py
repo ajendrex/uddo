@@ -3,9 +3,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.views import generic
+from django.contrib.auth.decorators import login_required
 
 from recursos.models import Recurso, ComentarioRecurso, RecursoForm
 
+@login_required
 def index(request):
   recursos_list = Recurso.objects.filter(creador=request.user)
   template = loader.get_template('recursos/index.html')
