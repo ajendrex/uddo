@@ -3,6 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from cursos.models import Curso
+from django.forms import ModelForm
 
 # Create your models here.
 class Recurso(models.Model):
@@ -33,6 +34,11 @@ class Recurso(models.Model):
 
   def __str__(self):
     return self.nombre
+
+class RecursoForm(ModelForm):
+  class Meta:
+    model = Recurso
+    fields = ['nombre', 'curso', 'tipo', 'categoria', 'descripcion']
 
 class InsumoRecurso(models.Model):
   archivo = models.FileField(upload_to="insumos/%Y/%m/%d/")

@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.views import generic
 
-from recursos.models import Recurso, ComentarioRecurso
+from recursos.models import Recurso, ComentarioRecurso, RecursoForm
 
 def index(request):
   recursos_list = Recurso.objects.filter(creador=request.user)
@@ -29,3 +29,18 @@ def comentar(request, recurso_id):
   comentario.fec_comentario = request.POST['fecha']
   comentario.save()
   return redirect(reverse('recursos:detalle', args=(c.id,)))
+
+def crearRecurso(request):
+  if request.method == 'POST':
+    form = RecursoForm(request.POST)
+    if form.is_valid():
+      recurso = form.save(commit=False)
+      recurso.creador = request.user
+      recurso.save()
+      return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+  else:
+    form = RecursoForm()
+
+  template = loader.get_template('recursos/crearRecurso.html')
+  context = RequestContext(request, {'form': form,})
+  return HttpResponse(template.render(context))

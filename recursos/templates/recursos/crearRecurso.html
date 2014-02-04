@@ -1,0 +1,21 @@
+{% extends "recursos/base.html" %}
+
+{% block title %}
+    <h1>Nuevo Recurso</h1>
+{% endblock %}
+
+{% block content %}
+{% if mensaje_de_error %}
+  <p><strong>{{ mensaje_de_error }}</strong></p>
+{% endif %}
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form action="{% url 'recursos:crearRecurso' %}" method="post" enctype="multipart/form-data" role="form">
+    {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Comentar" class="btn btn-default"/>
+    </form>
+  </div>
+</div>
+{% endblock %}
