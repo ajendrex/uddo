@@ -19,6 +19,7 @@ class DetailView(generic.DetailView):
   model = Recurso
   template_name = 'recursos/detalle.html'
 
+@login_required
 def comentar(request, recurso_id):
   c = get_object_or_404(Recurso, pk=recurso_id)
 
@@ -33,6 +34,7 @@ def comentar(request, recurso_id):
   comentario.save()
   return redirect(reverse('recursos:detalle', args=(c.id,)))
 
+@login_required
 def crearRecurso(request):
   InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso)
   if request.method == 'POST':
