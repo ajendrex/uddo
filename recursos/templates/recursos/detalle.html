@@ -32,6 +32,17 @@
         <th>Fecha de Creación:</th>
         <td>{{ recurso.fecha_creacion|date:"DATE_FORMAT" }}</td>
       </tr>
+      <tr>
+        <th>Insumos:</th>
+        <td>
+          <ul>
+            {% load mytags %}
+            {% for insumo in recurso.insumorecurso_set.all %}
+              <li><a href="{{ insumo.archivo.url }}">{{ insumo.archivo.name | basename }}</a></li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
     </table>
     <ul>
     {% for comentario in recurso.comentariorecurso_set.all %}

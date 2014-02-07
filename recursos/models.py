@@ -28,7 +28,7 @@ class Recurso(models.Model):
   proveedor = models.ForeignKey(User, null = True, blank=True, related_name = "recursos_prov")
   costo = models.IntegerField(null=True, blank=True)
   costoFinal = models.IntegerField(null=True, blank=True)
-  descripcion = models.CharField(max_length = 5000, blank=True)
+  descripcion = models.TextField(blank=True)
   link = models.CharField(max_length = 300, blank=True)
   fecha_creacion = models.DateTimeField(auto_now_add = True)
 

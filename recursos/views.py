@@ -4,8 +4,9 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.views import generic
 from django.contrib.auth.decorators import login_required
+from django.forms.models import inlineformset_factory
 
-from recursos.models import Recurso, ComentarioRecurso, RecursoForm
+from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso
 
 @login_required
 def index(request):
@@ -33,16 +34,26 @@ def comentar(request, recurso_id):
   return redirect(reverse('recursos:detalle', args=(c.id,)))
 
 def crearRecurso(request):
+  InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso)
   if request.method == 'POST':
-    form = RecursoForm(request.POST)
-    if form.is_valid():
-      recurso = form.save(commit=False)
+    recursoForm = RecursoForm(request.POST)
+    insumoFormset = InsumoFormset(request.POST, request.FILES)
+    if recursoForm.is_valid():
+      recurso = recursoForm.save(commit=False)
       recurso.creador = request.user
       recurso.save()
+      for insumoForm in insumoFormset:
+        if insumoForm.is_valid():
+          insumoRecurso = insumoForm.save(commit=False)
+          if not insumoRecurso.archivo.name:
+            continue
+          insumoRecurso.recurso = recurso
+          insumoRecurso.save()
       return redirect(reverse('recursos:detalle', args=(recurso.id,)))
   else:
-    form = RecursoForm()
+    recursoForm = RecursoForm()
+    insumoFormset = InsumoFormset()
 
   template = loader.get_template('recursos/crearRecurso.html')
-  context = RequestContext(request, {'form': form,})
+  context = RequestContext(request, {'recursoForm': recursoForm, 'insumoFormset': insumoFormset})
   return HttpResponse(template.render(context))

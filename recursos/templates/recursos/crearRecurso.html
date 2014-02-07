@@ -14,7 +14,8 @@
     <form action="{% url 'recursos:crearRecurso' %}" method="post" enctype="multipart/form-data" role="form">
     {% csrf_token %}
       <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
-      {{ form.as_p }}
+      {{ recursoForm.as_p }}
+      {{ insumoFormset.as_p }}
       <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:index' %}','_self')">Cancelar</button>
       <button type="submit" value="Crear" class="btn btn-primary">Crear</button>
     </form>
