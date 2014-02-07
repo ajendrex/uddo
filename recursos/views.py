@@ -5,6 +5,8 @@ from django.template import RequestContext, loader
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.forms.models import inlineformset_factory
+from django.forms.models import modelform_factory
+from django.contrib.auth.models import User
 
 from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso
 
@@ -57,4 +59,20 @@ def crearRecurso(request):
 
   template = loader.get_template('recursos/crearRecurso.html')
   context = RequestContext(request, {'recursoForm': recursoForm, 'insumoFormset': insumoFormset})
+  return HttpResponse(template.render(context))
+
+@login_required
+def asignarProveedor(request, recurso_id):
+  ProveedorForm = modelform_factory(Recurso, fields=('proveedor',))
+  recurso = Recurso.objects.get(id=recurso_id)
+  if request.method == 'POST':
+    proveedorForm = ProveedorForm(request.POST, instance=recurso)
+    recurso = proveedorForm.save()
+    return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+  else:
+    proveedorForm = ProveedorForm(instance=recurso)
+    proveedorForm.fields["proveedor"].queryset = User.objects.filter(groups__name="Proveedores")
+
+  template = loader.get_template('recursos/asignarProveedor.html')
+  context = RequestContext(request, {'proveedorForm': proveedorForm, 'recurso': recurso})
   return HttpResponse(template.render(context))

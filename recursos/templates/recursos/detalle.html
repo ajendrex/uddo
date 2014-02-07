@@ -16,28 +16,22 @@
     </div>
     <table class="table table-condensed" id="info-recurso">
       <tr>
-        <th>Creador</th>
+        <th>Creador:</th>
         <td>{{ recurso.creador.get_full_name }}</td>
-      </tr>
-      <tr>
-        <th>Curso</th>
+        <th>Curso:</th>
         <td>{{ recurso.curso.codigo }} {{ recurso.curso.nombre }}</td>
       </tr>
       <tr>
-        <th>Tipo de Recurso</th>
+        <th>Tipo de Recurso:</th>
         <td>{{ recurso.tipo }}</td>
-      </tr>
-      <tr>
-        <th>Categoría</th>
+        <th>Categoría:</th>
         <td>{{ recurso.categoria }}</td>
       </tr>
       <tr>
         <th>Fecha de Creación:</th>
         <td>{{ recurso.fecha_creacion|date:"DATE_FORMAT" }}</td>
-      </tr>
-      <tr>
-        <th>Insumos:</th>
-        <td>
+        <th rowspan=2>Insumos:</th>
+        <td rowspan=2>
           <ul>
             {% load mytags %}
             {% for insumo in recurso.insumorecurso_set.all %}
@@ -46,6 +40,26 @@
               <li>No hay insumos.</li>
             {% endfor %}
           </ul>
+        </td>
+      </tr>
+      <tr>
+        <th>Proveedor:</th>
+        <td>
+          {% if recurso.proveedor %}
+            {{ recurso.proveedor.get_full_name }}
+            {% for grupo in request.user.groups.all %}
+              {% if "Coordinadores" == grupo.name %}
+                <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:asignarProveedor' recurso.id %}', '_self')">Reasignar Proveedor</button>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            no asignado.
+            {% for grupo in request.user.groups.all %}
+              {% if "Coordinadores" == grupo.name %}
+                <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:asignarProveedor' recurso.id %}', '_self')">Asignar Proveedor</button>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
         </td>
       </tr>
     </table>

@@ -1,0 +1,31 @@
+{% extends "recursos/base.html" %}
+
+{% block title %}
+    <h1>Asignar Proveedor para "{{recurso.nombre}}"</h1>
+{% endblock %}
+
+{% block content %}
+{% if mensaje_de_error %}
+  <p><strong>{{ mensaje_de_error }}</strong></p>
+{% endif %}
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form action="{% url 'recursos:asignarProveedor' recurso.id %}" method="post" role="form">
+    {% csrf_token %}
+      <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
+      {{ proveedorForm.as_p }}
+      <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:detalle' recurso.id %}','_self')">Cancelar</button>
+      <button type="submit" value="Asignar" class="btn btn-primary">Asignar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+  <!-- TODO: agregar clase "form-control" a los input del formulario-->
+  <!-- $("#id_password").addClass("form-control"); -->
+</script>
+{% endblock %}
