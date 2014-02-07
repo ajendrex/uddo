@@ -6,13 +6,27 @@ from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.forms.models import inlineformset_factory
 from django.forms.models import modelform_factory
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso
+from cursos.models import Curso
 
 @login_required
 def index(request):
-  recursos_list = Recurso.objects.filter(creador=request.user)
+  coordinadoresGroup = Group.objects.get(name="Coordinadores")
+  supervisoresGroup = Group.objects.get(name="Supervisores")
+  profesoresGroup = Group.objects.get(name="Profesores")
+  proveedoresGroup = Group.objects.get(name="Proveedores")
+  if coordinadoresGroup in request.user.groups.all() or supervisoresGroup in request.user.groups.all():
+    recursos_list = Recurso.objects.all()
+  else:
+    if profesoresGroup in request.user.groups.all():
+      cursosProfesor = Curso.objects.filter(profesor=request.user)
+      recursos_list = Recurso.objects.filter(curso__in=cursosProfesor)
+    elif proveedoresGroup in request.user.groups.all():
+      recursos_list = Recurso.objects.filter(proveedor=request.user)
+    else:
+      recursos_list = Recurso.objects.filter(creador=request.user)
   template = loader.get_template('recursos/index.html')
   context = RequestContext(request, {'recursos_list': recursos_list,})
   return HttpResponse(template.render(context))
