@@ -60,5 +60,4 @@ class ComentarioRecurso(models.Model):
   owner = models.ForeignKey(User, null=True)
   recurso = models.ForeignKey(Recurso)
   comentario = models.TextField()
-  fec_comentario = models.DateTimeField() #La fecha del comentario será de libre definición por el comentador
   fec_creacion = models.DateTimeField(auto_now_add = True) #Esta fecha será la real en que se crea el comentario

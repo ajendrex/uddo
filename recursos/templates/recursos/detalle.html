@@ -11,6 +11,9 @@
 
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
+    <div>
+      <p class="bg-info">{{recurso.descripcion}}</p>
+    </div>
     <table class="table table-condensed" id="info-recurso">
       <tr>
         <th>Creador</th>
@@ -39,6 +42,8 @@
             {% load mytags %}
             {% for insumo in recurso.insumorecurso_set.all %}
               <li><a href="{{ insumo.archivo.url }}">{{ insumo.archivo.name | basename }}</a></li>
+            {% empty %}
+              <li>No hay insumos.</li>
             {% endfor %}
           </ul>
         </td>
@@ -46,7 +51,7 @@
     </table>
     <ul>
     {% for comentario in recurso.comentariorecurso_set.all %}
-      <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_comentario|date:"DATE_FORMAT" }}</small></li>
+      <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_creacion|date:"DATE_FORMAT" }}</small></li>
     {% endfor %}
     </ul>
 
@@ -55,10 +60,6 @@
       <div class="form-group">
       <label for="texto">Comentario</label>
       <input id="texto" type="text" name="texto" placeholder="Nuevo Comentario" class="form-control"/>
-      </div>
-      <div class="form-group">
-      <label for="texto">Fecha</label>
-      <input id="fecha" type="datetime" name="fecha" placeholder="YYYY-MM-DD" class="form-control"/>
       </div>
       <input type="submit" value="Comentar" class="btn btn-default"/>
     </form>

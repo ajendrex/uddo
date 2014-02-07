@@ -30,7 +30,6 @@ def comentar(request, recurso_id):
   comentario.owner = request.user
   comentario.recurso = c
   comentario.comentario = request.POST['texto']
-  comentario.fec_comentario = request.POST['fecha']
   comentario.save()
   return redirect(reverse('recursos:detalle', args=(c.id,)))
 
