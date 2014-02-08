@@ -28,6 +28,5 @@ def comentar(request, curso_id):
   comentario.curso = c
   comentario.estado = 'NI'
   comentario.comentario = request.POST['texto']
-  comentario.fec_comentario = request.POST['fecha']
   comentario.save()
   return redirect(reverse('cursos:detalle', args=(c.id,)))

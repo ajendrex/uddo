@@ -26,7 +26,6 @@ class ComentarioCurso(models.Model):
                                        ('RV', 'Revisión'),
                                        ('EN', 'Entregado')))
   comentario = models.TextField()
-  fec_comentario = models.DateTimeField() #La fecha del comentario será de libre definición por el comentado
   fec_creacion = models.DateTimeField(auto_now_add = True) #Esta fecha será la real en que se crea el comentario
 
   def __str__(self):

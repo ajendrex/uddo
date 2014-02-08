@@ -7,8 +7,7 @@
 {% block content %}
 {% if mensaje_de_error %}
   <p><strong>{{ mensaje_de_error }}</strong></p>
-{% endif %}
-
+{% else %}
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
     <form action="{% url 'recursos:crearRecurso' %}" method="post" enctype="multipart/form-data" role="form">
@@ -21,12 +20,5 @@
     </form>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-{{ block.super }}
-<script type="text/javascript">
-  <!-- TODO: agregar clase "form-control" a los input del formulario-->
-  <!-- $("#id_password").addClass("form-control"); -->
-</script>
+{% endif %}
 {% endblock %}

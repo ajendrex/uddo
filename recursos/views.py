@@ -10,25 +10,27 @@ from django.contrib.auth.models import User, Group
 
 from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso
 from cursos.models import Curso
+from utils.userutils import *
 
 @login_required
 def index(request):
-  coordinadoresGroup = Group.objects.get(name="Coordinadores")
-  supervisoresGroup = Group.objects.get(name="Supervisores")
-  profesoresGroup = Group.objects.get(name="Profesores")
-  proveedoresGroup = Group.objects.get(name="Proveedores")
-  if coordinadoresGroup in request.user.groups.all() or supervisoresGroup in request.user.groups.all():
-    recursos_list = Recurso.objects.all()
+  u = request.user
+  objetos = {}
+  if usuarioEsCoordinador(u) or usuarioEsSupervisor(u):
+    objetos["recursos_list"] = Recurso.objects.all()
   else:
-    if profesoresGroup in request.user.groups.all():
-      cursosProfesor = Curso.objects.filter(profesor=request.user)
-      recursos_list = Recurso.objects.filter(curso__in=cursosProfesor)
-    elif proveedoresGroup in request.user.groups.all():
-      recursos_list = Recurso.objects.filter(proveedor=request.user)
+    if usuarioEsProfesor(u):
+      cursosProfesor = Curso.objects.filter(profesor=u)
+      objetos["recursos_list"] = Recurso.objects.filter(curso__in=cursosProfesor)
+    elif usuarioEsProveedor(u):
+      objetos["recursos_list"] = Recurso.objects.filter(proveedor=u)
+    elif usuarioEsDI(u):
+      objetos["recursos_list"] = Recurso.objects.filter(creador=u)
     else:
-      recursos_list = Recurso.objects.filter(creador=request.user)
+      objetos["mensaje_de_error"] = "No posee privilegios para ver esta página"
+      
   template = loader.get_template('recursos/index.html')
-  context = RequestContext(request, {'recursos_list': recursos_list,})
+  context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
 
 class DetailView(generic.DetailView):
@@ -51,28 +53,32 @@ def comentar(request, recurso_id):
 
 @login_required
 def crearRecurso(request):
-  InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso)
-  if request.method == 'POST':
-    recursoForm = RecursoForm(request.POST)
-    insumoFormset = InsumoFormset(request.POST, request.FILES)
-    if recursoForm.is_valid():
-      recurso = recursoForm.save(commit=False)
-      recurso.creador = request.user
-      recurso.save()
-      for insumoForm in insumoFormset:
-        if insumoForm.is_valid():
-          insumoRecurso = insumoForm.save(commit=False)
-          if not insumoRecurso.archivo.name:
-            continue
-          insumoRecurso.recurso = recurso
-          insumoRecurso.save()
-      return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+  objetos = {}
+  if not usuarioEsDI(request.user):
+    objetos["mensaje_de_error"] = "No posee privilegios para crear un recurso"
   else:
-    recursoForm = RecursoForm()
-    insumoFormset = InsumoFormset()
+    InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso)
+    if request.method == 'POST':
+      recursoForm = RecursoForm(request.POST)
+      insumoFormset = InsumoFormset(request.POST, request.FILES)
+      if recursoForm.is_valid():
+        recurso = recursoForm.save(commit=False)
+        recurso.creador = request.user
+        recurso.save()
+        for insumoForm in insumoFormset:
+          if insumoForm.is_valid():
+            insumoRecurso = insumoForm.save(commit=False)
+            if not insumoRecurso.archivo.name:
+              continue
+            insumoRecurso.recurso = recurso
+            insumoRecurso.save()
+        return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+    else:
+      objetos["recursoForm"] = RecursoForm()
+      objetos["insumoFormset"] = InsumoFormset()
 
   template = loader.get_template('recursos/crearRecurso.html')
-  context = RequestContext(request, {'recursoForm': recursoForm, 'insumoFormset': insumoFormset})
+  context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
 
 @login_required

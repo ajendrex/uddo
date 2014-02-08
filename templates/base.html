@@ -19,9 +19,15 @@
       <div class="row" style="background-color:#002a4f; color:#ffffff; padding:5px">
         {% if user.is_authenticated %}
         <div class="col-md-4">
-            <div>{{ user.first_name }} {{ user.last_name }}</div>
+            <div>{{ user.get_full_name }}</div>
         </div>
-        <div class="col-md-2 col-md-offset-6">
+        <div class="col-md-6">
+          <ul class="list-inline">
+            <li><a href="{% url 'cursos:index' %}">Cursos</a></li>
+            <li><a href="{% url 'recursos:index' %}">Recursos</a></li>
+          </ul>
+        </div>
+        <div class="col-md-2">
             <div style="float:right"><a href="/logout?next={{ request.get_full_path }}" style="color:#cccccc">Cerrar Sesión</a></div>
         </div>
         {% else %}
