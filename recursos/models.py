@@ -31,6 +31,7 @@ class Recurso(models.Model):
   descripcion = models.TextField(blank=True)
   link = models.CharField(max_length = 300, blank=True)
   fecha_creacion = models.DateTimeField(auto_now_add = True)
+  entrega_estimada = models.DateTimeField(null=True)
   aprobado_di = models.BooleanField(default=False)
   aprobado_profesor = models.BooleanField(default=False)
   aprobado_coordinador = models.BooleanField(default=False)
@@ -49,6 +50,7 @@ class InsumoRecurso(models.Model):
 
 class VersionRecurso(models.Model):
   archivo = models.FileField(upload_to="versiones/%Y/%m/%d/")
+  fecha_entrega = models.DateTimeField(auto_now_add = True)
   recurso = models.ForeignKey(Recurso)
 
 class Tag(models.Model):

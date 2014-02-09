@@ -17,6 +17,8 @@
               <th>Nombre</th>
               <th>Curso</th>
               <th>Fecha de Creación</th>
+              <th>Proveedor</th>
+              <th>1&#170; Entrega</th>
             </tr>
           </thead>
           <tbody>
@@ -25,6 +27,8 @@
               <td><a href="{% url 'recursos:detalle' recurso.id %}">{{ recurso.nombre }}</a></td>
               <td>{{ recurso.curso.codigo }}</td>
               <td>{{ recurso.fecha_creacion }}</td>
+              <td>{{ recurso.proveedor.get_full_name }}</td>
+              <td>{{ recurso.entrega_estimada | date:"DATE_FORMAT" }}</td>
             </tr>
         {% endfor %}
           </tbody>
