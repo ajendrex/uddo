@@ -7,8 +7,10 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    {% block css %}
     {% load staticfiles %}
     <link rel="stylesheet" href="{% static "uddo/css/bootstrap.min.css" %}" />
+    {% endblock %}
     <title>{% block htitle %}Unidad de Diseño y Desarrollo Online{% endblock %}</title>
   </head>
 
@@ -18,10 +20,10 @@
       {% block sesion %}
       <div class="row" style="background-color:#002a4f; color:#ffffff; padding:5px">
         {% if user.is_authenticated %}
-        <div class="col-md-4">
-            <div>{{ user.get_full_name }}</div>
+        <div class="col-md-2">
+            <div><small>{{ user.get_full_name }}</small></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-8">
           <ul class="list-inline">
             <li><a href="{% url 'cursos:index' %}">Cursos</a></li>
             <li><a href="{% url 'recursos:index' %}">Recursos</a></li>

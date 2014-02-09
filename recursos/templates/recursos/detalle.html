@@ -19,7 +19,7 @@
         <th>Creador:</th>
         <td>{{ recurso.creador.get_full_name }}</td>
         <th>Curso:</th>
-        <td>{{ recurso.curso.codigo }} {{ recurso.curso.nombre }}</td>
+        <td><a href="{% url 'cursos:detalle' recurso.curso.id %}">{{ recurso.curso.codigo }} {{ recurso.curso.nombre }}</a></td>
       </tr>
       <tr>
         <th>Tipo de Recurso:</th>
