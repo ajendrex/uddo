@@ -1,5 +1,11 @@
 {% extends "recursos/base.html" %}
 {% load crispy_forms_tags %}
+{% load staticfiles %}
+
+    {% block css %}
+    {{ block.super }}
+    {{ entregaForm.media }}
+    {% endblock %}
 
 {% block title %}
     <h1>Comprometer Fecha de Entrega para "{{recurso.nombre}}"</h1>
@@ -8,7 +14,7 @@
 {% block content %}
 {% if mensaje_de_error %}
   <p><strong>{{ mensaje_de_error }}</strong></p>
-  <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:index' %}','_self')">Perdón!</button>
+  <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:index' %}','_self')">Volver</button>
 {% else %}
   <div class="row">
     <div class="col-md-8 col-md-offset-2">
@@ -16,10 +22,18 @@
       {% csrf_token %}
         <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
         {{ entregaForm | crispy }}
+        <hr>
         <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:detalle' recurso.id %}','_self')">Cancelar</button>
         <button type="submit" value="Aceptar" class="btn btn-primary">Aceptar</button>
       </form>
     </div>
   </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script type="text/javascript">
+    $("#id_entrega_estimada").addClass("form-control");
+  </script>
 {% endblock %}

@@ -7,8 +7,12 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    {% block css %}
     {% load staticfiles %}
+    {% block hscripts %}
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="{% static "uddo/js/bootstrap.min.js" %}"></script>
+    {% endblock %}
+    {% block css %}
     <link rel="stylesheet" href="{% static "uddo/css/bootstrap.min.css" %}" />
     {% endblock %}
     <title>{% block htitle %}Unidad de Diseño y Desarrollo Online{% endblock %}</title>
@@ -48,8 +52,6 @@
     </div>
 
     {% block scripts %}
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="{% static "uddo/js/bootstrap.min.js" %}"></script>
     {% endblock %}
   </body>
 </html>

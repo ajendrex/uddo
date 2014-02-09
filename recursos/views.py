@@ -8,6 +8,7 @@ from django.forms.models import inlineformset_factory
 from django.forms.models import modelform_factory
 from django.contrib.auth.models import User, Group
 from django.contrib.admin import widgets
+from bootstrap3_datetime.widgets import DateTimePicker
 
 from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso
 from cursos.models import Curso
@@ -114,7 +115,9 @@ def asignarProveedor(request, recurso_id):
 @login_required
 def definirFechaEntrega(request, recurso_id):
   EntregaForm = modelform_factory(Recurso,
-                                  fields=('entrega_estimada',),)
+                                  fields=('entrega_estimada',),
+                                  widgets={'entrega_estimada':DateTimePicker(options={"format": "DD/MM/YYYY HH:mm",
+                                                                         "pickSeconds": False})},)
   recurso = Recurso.objects.get(id=recurso_id)
   objetos = {"recurso": recurso}
   if request.method == 'POST':
@@ -130,7 +133,7 @@ def definirFechaEntrega(request, recurso_id):
         else:
           objetos["mensaje_de_error"] = "Usted no ha sido asignado para producir este recurso"
     else:
-      objetos["mensaje_de_error"] = "Fecha ingresa no es válida"
+      objetos["mensaje_de_error"] = "Fecha ingresada no es válida"
   else:
     objetos["entregaForm"] = EntregaForm(instance=recurso)
 
