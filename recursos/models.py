@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from cursos.models import Curso
 from django.forms import ModelForm
+import datetime
 
 # Create your models here.
 class Recurso(models.Model):
@@ -38,6 +39,15 @@ class Recurso(models.Model):
 
   def __str__(self):
     return self.nombre
+
+  def sinEntregas(self):
+    return not self.versionrecurso_set.all().length()
+
+  def entregaAtrasada(self):
+    if self.sinEntregas():
+      return True
+    primeraEntrega = self.versionrecurso_set.all()[0]
+    return self.entrega_estimada + datetime.timedelta(days=1) <= primeraEntrega.fecha_entrega
 
 class RecursoForm(ModelForm):
   class Meta:

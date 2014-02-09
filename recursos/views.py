@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import inlineformset_factory
 from django.forms.models import modelform_factory
 from django.contrib.auth.models import User, Group
+from django.contrib.admin import widgets
 
 from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso
 from cursos.models import Curso
@@ -57,7 +58,7 @@ def crearRecurso(request):
   if not usuarioEsDI(request.user):
     objetos["mensaje_de_error"] = "No posee privilegios para crear un recurso"
   else:
-    InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso)
+    InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso, extra=1)
     if request.method == 'POST':
       recursoForm = RecursoForm(request.POST)
       insumoFormset = InsumoFormset(request.POST, request.FILES)
@@ -76,6 +77,7 @@ def crearRecurso(request):
     else:
       objetos["recursoForm"] = RecursoForm()
       objetos["insumoFormset"] = InsumoFormset()
+      objetos["insumoForm"] = InsumoFormset()[0]
 
   template = loader.get_template('recursos/crearRecurso.html')
   context = RequestContext(request, objetos)
@@ -87,7 +89,7 @@ def asignarProveedor(request, recurso_id):
   recurso = Recurso.objects.get(id=recurso_id)
   if request.method == 'POST':
     proveedorForm = ProveedorForm(request.POST, instance=recurso)
-    recurso = proveedorForm.save()
+    proveedorForm.save()
     return redirect(reverse('recursos:detalle', args=(recurso.id,)))
   else:
     proveedorForm = ProveedorForm(instance=recurso)
@@ -95,4 +97,20 @@ def asignarProveedor(request, recurso_id):
 
   template = loader.get_template('recursos/asignarProveedor.html')
   context = RequestContext(request, {'proveedorForm': proveedorForm, 'recurso': recurso})
+  return HttpResponse(template.render(context))
+
+@login_required
+def definirFechaEntrega(request, recurso_id):
+  EntregaForm = modelform_factory(Recurso,
+                                  fields=('entrega_estimada',),)
+  recurso = Recurso.objects.get(id=recurso_id)
+  if request.method == 'POST':
+    entregaForm = EntregaForm(request.POST, instance=recurso)
+    entregaForm.save()
+    return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+  else:
+    entregaForm = EntregaForm(instance=recurso)
+
+  template = loader.get_template('recursos/definirFechaEntrega.html')
+  context = RequestContext(request, {'entregaForm': entregaForm, 'recurso': recurso})
   return HttpResponse(template.render(context))

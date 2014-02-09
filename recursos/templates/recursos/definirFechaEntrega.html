@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    <h1>Asignar Proveedor para "{{recurso.nombre}}"</h1>
+    <h1>Comprometer Fecha de Entrega para "{{recurso.nombre}}"</h1>
 {% endblock %}
 
 {% block content %}
@@ -12,21 +12,13 @@
 
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
-    <form action="{% url 'recursos:asignarProveedor' recurso.id %}" method="post" role="form">
+    <form action="{% url 'recursos:definirFechaEntrega' recurso.id %}" method="post" role="form">
     {% csrf_token %}
       <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
-      {{ proveedorForm | crispy }}
+      {{ entregaForm | crispy }}
       <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:detalle' recurso.id %}','_self')">Cancelar</button>
-      <button type="submit" value="Asignar" class="btn btn-primary">Asignar</button>
+      <button type="submit" value="Aceptar" class="btn btn-primary">Aceptar</button>
     </form>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-{{ block.super }}
-<script type="text/javascript">
-  <!-- TODO: agregar clase "form-control" a los input del formulario-->
-  <!-- $("#id_password").addClass("form-control"); -->
-</script>
 {% endblock %}

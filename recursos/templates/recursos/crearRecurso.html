@@ -1,4 +1,5 @@
 {% extends "recursos/base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}
     <h1>Nuevo Recurso</h1>
@@ -13,12 +14,26 @@
     <form action="{% url 'recursos:crearRecurso' %}" method="post" enctype="multipart/form-data" role="form">
     {% csrf_token %}
       <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
-      {{ recursoForm.as_p }}
-      {{ insumoFormset.as_p }}
+      {{ recursoForm | crispy }}
+      <div id="insumos">
+        <h3>Insumos:</h3>
+        {{ insumoFormset | crispy }}
+      </div>
+      <hr>
       <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:index' %}','_self')">Cancelar</button>
       <button type="submit" value="Crear" class="btn btn-primary">Crear</button>
     </form>
+    <hr>
   </div>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+  {% for field in recursoForm %}
+    $("#{{ field.auto_id }}").addClass("form-control");
+  {% endfor %}
+</script>
 {% endblock %}
