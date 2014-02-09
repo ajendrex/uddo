@@ -7,76 +7,84 @@
 {% block content %}
 {% if mensaje_de_error %}
   <p><strong>{{ mensaje_de_error }}</strong></p>
-{% endif %}
-
-<div class="row">
-  <div class="col-md-8 col-md-offset-2">
-    <div>
-      <p class="bg-info">{{recurso.descripcion}}</p>
-    </div>
-    <table class="table table-condensed" id="info-recurso">
-      <tr>
-        <th>Creador:</th>
-        <td>{{ recurso.creador.get_full_name }}</td>
-        <th>Curso:</th>
-        <td><a href="{% url 'cursos:detalle' recurso.curso.id %}">{{ recurso.curso.codigo }} {{ recurso.curso.nombre }}</a></td>
-      </tr>
-      <tr>
-        <th>Tipo de Recurso:</th>
-        <td>{{ recurso.tipo }}</td>
-        <th>Categoría:</th>
-        <td>{{ recurso.categoria }}</td>
-      </tr>
-      <tr>
-        <th>Fecha de Creación:</th>
-        <td>{{ recurso.fecha_creacion|date:"DATE_FORMAT" }}</td>
-        <th rowspan=2>Insumos:</th>
-        <td rowspan=2>
-          <ul>
-            {% load mytags %}
-            {% for insumo in recurso.insumorecurso_set.all %}
-              <li><a href="{{ insumo.archivo.url }}">{{ insumo.archivo.name | basename }}</a></li>
-            {% empty %}
-              <li>No hay insumos.</li>
-            {% endfor %}
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <th>Proveedor:</th>
-        <td>
-          {% if recurso.proveedor %}
-            {{ recurso.proveedor.get_full_name }}
-            {% for grupo in request.user.groups.all %}
-              {% if "Coordinadores" == grupo.name %}
-                <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:asignarProveedor' recurso.id %}', '_self')">Reasignar Proveedor</button>
-              {% endif %}
-            {% endfor %}
-          {% else %}
-            no asignado.
-            {% for grupo in request.user.groups.all %}
-              {% if "Coordinadores" == grupo.name %}
-                <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:asignarProveedor' recurso.id %}', '_self')">Asignar Proveedor</button>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
-        </td>
-      </tr>
-    </table>
-    <ul>
-    {% for comentario in recurso.comentariorecurso_set.all %}
-      <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_creacion|date:"DATE_FORMAT" }}</small></li>
-    {% endfor %}
-    </ul>
-
-    <form action="{% url 'recursos:comentar' recurso.id %}" method="post" role="form">
-    {% csrf_token %}
-      <div class="form-group">
-      <label for="texto">Comentario</label>
-      <input id="texto" type="text" name="texto" placeholder="Nuevo Comentario" class="form-control"/>
+{% else %}
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <div>
+        <p class="bg-info">{{recurso.descripcion}}</p>
       </div>
-      <input type="submit" value="Comentar" class="btn btn-default"/>
-    </form>
+      <table class="table table-condensed" id="info-recurso">
+        <tr>
+          <th>Creador:</th>
+          <td>{{ recurso.creador.get_full_name }}</td>
+          <th>Curso:</th>
+          <td><a href="{% url 'cursos:detalle' recurso.curso.id %}">{{ recurso.curso.codigo }} {{ recurso.curso.nombre }}</a></td>
+        </tr>
+        <tr>
+          <th>Tipo de Recurso:</th>
+          <td>{{ recurso.tipo }}</td>
+          <th>Categoría:</th>
+          <td>{{ recurso.categoria }}</td>
+        </tr>
+        <tr>
+          <th>Fecha de Creación:</th>
+          <td>{{ recurso.fecha_creacion|date:"DATE_FORMAT" }}</td>
+          <th rowspan=2>Insumos:</th>
+          <td rowspan=2>
+            <ul>
+              {% load mytags %}
+              {% for insumo in recurso.insumorecurso_set.all %}
+                <li><a href="{{ insumo.archivo.url }}">{{ insumo.archivo.name | basename }}</a></li>
+              {% empty %}
+                <li>No hay insumos.</li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <th>Proveedor:</th>
+          <td>
+            {% if recurso.proveedor %}
+              {{ recurso.proveedor.get_full_name }}
+              {% ifusergroup Coordinadores %}
+                <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:asignarProveedor' recurso.id %}', '_self')">Reasignar Proveedor</button>
+              {% endifusergroup %}
+            {% else %}
+              no asignado.
+              {% ifusergroup Coordinadores %}
+                <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:asignarProveedor' recurso.id %}', '_self')">Asignar Proveedor</button>
+              {% endifusergroup %}
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Fecha Entrega:</th>
+          <td>
+            {% if recurso.entrega_estimada %}
+              {{ recurso.entrega_estimada|date:"DATE_FORMAT"}}
+            {% else %}
+              {% ifusergroup Proveedores %}
+                <a href="{% url 'recursos:definirFechaEntrega' recurso.id %}">Informar</a>
+              {% endifusergroup %}
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+      <ul>
+      {% for comentario in recurso.comentariorecurso_set.all %}
+        <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_creacion|date:"DATE_FORMAT" }}</small></li>
+      {% endfor %}
+      </ul>
+
+      <form action="{% url 'recursos:comentar' recurso.id %}" method="post" role="form">
+      {% csrf_token %}
+        <div class="form-group">
+        <label for="texto">Comentario</label>
+        <input id="texto" type="text" name="texto" placeholder="Nuevo Comentario" class="form-control"/>
+        </div>
+        <input type="submit" value="Comentar" class="btn btn-default"/>
+      </form>
+    </div>
   </div>
-</div>
+{% endif %}
 {% endblock %}

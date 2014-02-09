@@ -8,17 +8,18 @@
 {% block content %}
 {% if mensaje_de_error %}
   <p><strong>{{ mensaje_de_error }}</strong></p>
-{% endif %}
-
-<div class="row">
-  <div class="col-md-8 col-md-offset-2">
-    <form action="{% url 'recursos:definirFechaEntrega' recurso.id %}" method="post" role="form">
-    {% csrf_token %}
-      <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
-      {{ entregaForm | crispy }}
-      <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:detalle' recurso.id %}','_self')">Cancelar</button>
-      <button type="submit" value="Aceptar" class="btn btn-primary">Aceptar</button>
-    </form>
+  <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:index' %}','_self')">Perdón!</button>
+{% else %}
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <form action="{% url 'recursos:definirFechaEntrega' recurso.id %}" method="post" role="form">
+      {% csrf_token %}
+        <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
+        {{ entregaForm | crispy }}
+        <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:detalle' recurso.id %}','_self')">Cancelar</button>
+        <button type="submit" value="Aceptar" class="btn btn-primary">Aceptar</button>
+      </form>
+    </div>
   </div>
-</div>
+{% endif %}
 {% endblock %}

@@ -32,7 +32,7 @@ class Recurso(models.Model):
   descripcion = models.TextField(blank=True)
   link = models.CharField(max_length = 300, blank=True)
   fecha_creacion = models.DateTimeField(auto_now_add = True)
-  entrega_estimada = models.DateTimeField(null=True)
+  entrega_estimada = models.DateTimeField(null=True, blank=True)
   aprobado_di = models.BooleanField(default=False)
   aprobado_profesor = models.BooleanField(default=False)
   aprobado_coordinador = models.BooleanField(default=False)
@@ -66,10 +66,6 @@ class VersionRecurso(models.Model):
 class Tag(models.Model):
   tag = models.CharField(max_length = 100, unique=True)
   recursos = models.ManyToManyField(Recurso, related_name="tags")
-
-class FechaEntrega(models.Model):
-  fecha = models.DateTimeField()
-  recurso = models.ForeignKey(Recurso)
 
 class ComentarioRecurso(models.Model):
   owner = models.ForeignKey(User, null=True)

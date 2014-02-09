@@ -11,7 +11,7 @@ from django.contrib.admin import widgets
 
 from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso
 from cursos.models import Curso
-from utils.userutils import *
+from utils.utils import *
 
 @login_required
 def index(request):
@@ -34,9 +34,15 @@ def index(request):
   context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
 
-class DetailView(generic.DetailView):
-  model = Recurso
-  template_name = 'recursos/detalle.html'
+@login_required
+def detalle(request, recurso_id):
+  objetos = {}
+  objetos["recurso"] = Recurso.objects.get(id=recurso_id)
+
+  template = loader.get_template('recursos/detalle.html')
+  context = RequestContext(request, objetos)
+  return HttpResponse(template.render(context))
+  
 
 @login_required
 def comentar(request, recurso_id):
@@ -74,6 +80,8 @@ def crearRecurso(request):
             insumoRecurso.recurso = recurso
             insumoRecurso.save()
         return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+      else:
+        objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!"
     else:
       objetos["recursoForm"] = RecursoForm()
       objetos["insumoFormset"] = InsumoFormset()
@@ -87,16 +95,20 @@ def crearRecurso(request):
 def asignarProveedor(request, recurso_id):
   ProveedorForm = modelform_factory(Recurso, fields=('proveedor',))
   recurso = Recurso.objects.get(id=recurso_id)
+  objetos = {"recurso": recurso}
   if request.method == 'POST':
     proveedorForm = ProveedorForm(request.POST, instance=recurso)
-    proveedorForm.save()
-    return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+    if proveedorForm.is_valid():
+      proveedorForm.save()
+      return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+    else:
+      objetos["mensaje_de_error"] = "Algo salió mal..."
   else:
-    proveedorForm = ProveedorForm(instance=recurso)
-    proveedorForm.fields["proveedor"].queryset = User.objects.filter(groups__name="Proveedores")
+    objetos["proveedorForm"] = ProveedorForm(instance=recurso)
+    objetos["proveedorForm"].fields["proveedor"].queryset = User.objects.filter(groups__name="Proveedores")
 
   template = loader.get_template('recursos/asignarProveedor.html')
-  context = RequestContext(request, {'proveedorForm': proveedorForm, 'recurso': recurso})
+  context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
 
 @login_required
@@ -104,13 +116,24 @@ def definirFechaEntrega(request, recurso_id):
   EntregaForm = modelform_factory(Recurso,
                                   fields=('entrega_estimada',),)
   recurso = Recurso.objects.get(id=recurso_id)
+  objetos = {"recurso": recurso}
   if request.method == 'POST':
     entregaForm = EntregaForm(request.POST, instance=recurso)
-    entregaForm.save()
-    return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+    if entregaForm.is_valid():
+      r = entregaForm.save(commit=False)
+      if (r.id != recurso.id):
+        objetos["mensaje_de_error"] = "Algo salió mal, parece un intento por modificar otro recurso"
+      else:
+        if (r.proveedor == request.user):
+          r.save()
+          return redirect(reverse('recursos:detalle', args=(r.id,)))
+        else:
+          objetos["mensaje_de_error"] = "Usted no ha sido asignado para producir este recurso"
+    else:
+      objetos["mensaje_de_error"] = "Fecha ingresa no es válida"
   else:
-    entregaForm = EntregaForm(instance=recurso)
+    objetos["entregaForm"] = EntregaForm(instance=recurso)
 
   template = loader.get_template('recursos/definirFechaEntrega.html')
-  context = RequestContext(request, {'entregaForm': entregaForm, 'recurso': recurso})
+  context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
