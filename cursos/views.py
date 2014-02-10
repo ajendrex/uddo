@@ -1,22 +1,44 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.urlresolvers import reverse
 from django.views import generic
-from cursos.models import Curso, ComentarioCurso
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.template import RequestContext, loader
+from django.http import HttpResponse
+
+from cursos.models import Curso, ComentarioCurso
+from utils.utils import *
 
 # Create your views here.
 class IndexView(generic.ListView):
+  model = Curso
   template_name = 'cursos/index.html'
   context_object_name = 'latest_cursos_list'
 
-  def get_queryset(self):
-    """Retorna los últimos 5 cursos."""
-    return Curso.objects.order_by('-fec_modificacion')[:5]
+@login_required
+def index(request):
+  u = request.user
+  objetos = {}
+  if usuarioEsCoordinador(u) or usuarioEsSupervisor(u):
+    objetos["cursos_list"] = Curso.objects.all()
+  else:
+    if usuarioEsProfesor(u):
+      objetos["cursos_list"] = Curso.objects.filter(profesor=u)
+    elif usuarioEsDI(u):
+      objetos["cursos_list"] = Curso.objects.filter(owner=u)
+    else:
+      objetos["mensaje_de_error"] = "No posee privilegios para ver esta página."
+      
+  template = loader.get_template('cursos/index.html')
+  context = RequestContext(request, objetos)
+  return HttpResponse(template.render(context))
+
 
 class DetailView(generic.DetailView):
   model = Curso
   template_name = 'cursos/detalle.html'
 
+@login_required
 def comentar(request, curso_id):
   c = get_object_or_404(Curso, pk=curso_id)
 

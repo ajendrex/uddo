@@ -1,0 +1,7 @@
+Dependencias:
+
+Python 3.3 o superior. Con python 3.3 como target, instalar todo el resto:
+  setuptools
+  mysql-python3 (https://github.com/vsajip/MySQL-for-Python-3)
+  django-bootstrap3-datetimepicker (que puede ser instalado con pip, pero entonces pip también debe ser instalado con python3.3 como target)
+  django-crispy-forms (puede ser instalado con pip)

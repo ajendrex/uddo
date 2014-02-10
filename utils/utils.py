@@ -20,3 +20,6 @@ def usuarioEsProveedor(u):
 
 def usuarioEsDI(u):
   return diGroup in u.groups.all()
+
+def usuarioEsInterno(u):
+  return usuarioEsSupervisor(u) or usuarioEsCoordinador(u) or usuarioEsDI(u)

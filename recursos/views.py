@@ -29,7 +29,7 @@ def index(request):
     elif usuarioEsDI(u):
       objetos["recursos_list"] = Recurso.objects.filter(creador=u)
     else:
-      objetos["mensaje_de_error"] = "No posee privilegios para ver esta página"
+      objetos["mensaje_de_error"] = "No posee privilegios para ver esta página."
       
   template = loader.get_template('recursos/index.html')
   context = RequestContext(request, objetos)
@@ -38,12 +38,19 @@ def index(request):
 @login_required
 def detalle(request, recurso_id):
   objetos = {}
-  objetos["recurso"] = Recurso.objects.get(id=recurso_id)
+  recurso = Recurso.objects.get(id=recurso_id) 
+  objetos["recurso"] = recurso
+  u = request.user
+  if usuarioEsProfesor(u) and recurso.curso.profesor != u:
+    objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
+  elif usuarioEsProveedor(u) and recurso.proveedor != u:
+    objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
+  elif not usuarioEsInterno(u):
+    objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
 
   template = loader.get_template('recursos/detalle.html')
   context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
-  
 
 @login_required
 def comentar(request, recurso_id):
@@ -63,7 +70,7 @@ def comentar(request, recurso_id):
 def crearRecurso(request):
   objetos = {}
   if not usuarioEsDI(request.user):
-    objetos["mensaje_de_error"] = "No posee privilegios para crear un recurso"
+    objetos["mensaje_de_error"] = "Usted no posee privilegios para crear un recurso."
   else:
     InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso, extra=1)
     if request.method == 'POST':
@@ -82,7 +89,7 @@ def crearRecurso(request):
             insumoRecurso.save()
         return redirect(reverse('recursos:detalle', args=(recurso.id,)))
       else:
-        objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!"
+        objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!."
     else:
       objetos["recursoForm"] = RecursoForm()
       objetos["insumoFormset"] = InsumoFormset()
@@ -97,7 +104,9 @@ def asignarProveedor(request, recurso_id):
   ProveedorForm = modelform_factory(Recurso, fields=('proveedor',))
   recurso = Recurso.objects.get(id=recurso_id)
   objetos = {"recurso": recurso}
-  if request.method == 'POST':
+  if not usuarioEsCoordinador(request.user):
+    objetos["mensaje_de_error"] = "Usted no puede asignar proveedor al recurso."
+  elif request.method == 'POST':
     proveedorForm = ProveedorForm(request.POST, instance=recurso)
     if proveedorForm.is_valid():
       proveedorForm.save()
@@ -120,22 +129,24 @@ def definirFechaEntrega(request, recurso_id):
                                                                          "pickSeconds": False})},)
   recurso = Recurso.objects.get(id=recurso_id)
   objetos = {"recurso": recurso}
-  if request.method == 'POST':
-    entregaForm = EntregaForm(request.POST, instance=recurso)
-    if entregaForm.is_valid():
-      r = entregaForm.save(commit=False)
-      if (r.id != recurso.id):
-        objetos["mensaje_de_error"] = "Algo salió mal, parece un intento por modificar otro recurso"
-      else:
-        if (r.proveedor == request.user):
+  if recurso.entrega_estimada:
+    objetos["mensaje_de_error"] = "No puede modificar la fecha ya informada."
+  elif recurso.proveedor != request.user:
+    objetos["mensaje_de_error"] = "Usted no ha sido asignado para producir este recurso."
+  else:
+    if request.method == 'POST':
+      entregaForm = EntregaForm(request.POST, instance=recurso)
+      if entregaForm.is_valid():
+        r = entregaForm.save(commit=False)
+        if (r.id != recurso.id):
+          objetos["mensaje_de_error"] = "Algo salió mal, parece un intento por modificar otro recurso."
+        else:
           r.save()
           return redirect(reverse('recursos:detalle', args=(r.id,)))
-        else:
-          objetos["mensaje_de_error"] = "Usted no ha sido asignado para producir este recurso"
+      else:
+        objetos["mensaje_de_error"] = "Fecha ingresada no es válida."
     else:
-      objetos["mensaje_de_error"] = "Fecha ingresada no es válida"
-  else:
-    objetos["entregaForm"] = EntregaForm(instance=recurso)
+      objetos["entregaForm"] = EntregaForm(instance=recurso)
 
   template = loader.get_template('recursos/definirFechaEntrega.html')
   context = RequestContext(request, objetos)
