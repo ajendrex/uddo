@@ -7,6 +7,7 @@ from django.template import RequestContext, loader
 from django.http import HttpResponse
 
 from cursos.models import Curso, ComentarioCurso
+from cursos.forms import CursoForm
 from utils.utils import *
 
 # Create your views here.
@@ -52,3 +53,26 @@ def comentar(request, curso_id):
   comentario.comentario = request.POST['texto']
   comentario.save()
   return redirect(reverse('cursos:detalle', args=(c.id,)))
+
+@login_required
+def crearCurso(request):
+  objetos = {}
+  if not usuarioEsDI(request.user):
+    objetos["mensaje_de_error"] = "Usted no posee privilegios para crear un curso."
+  else:
+    if request.method == 'POST':
+      cursoForm = CursoForm(request.POST)
+      if cursoForm.is_valid():
+        curso = cursoForm.save(commit=False)
+        curso.owner = request.user
+        curso.save()
+        return redirect(reverse('cursos:detalle', args=(curso.id,)))
+      else:
+        objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!."
+        objetos["errores"] = cursoForm.errors
+    else:
+      objetos["cursoForm"] = CursoForm()
+
+  template = loader.get_template('cursos/crearCurso.html')
+  context = RequestContext(request, objetos)
+  return HttpResponse(template.render(context))

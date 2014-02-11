@@ -21,6 +21,7 @@
       </form>
     </div>
   </div>
+{% endif %}
   {% endblock %}
 
   {% block scripts %}
@@ -30,5 +31,4 @@
       $("#{{ field.auto_id }}").addClass("form-control");
     {% endfor %}
   </script>
-{% endif %}
 {% endblock %}

@@ -1,0 +1,43 @@
+{% extends "recursos/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    <h1>Nuevo Curso</h1>
+{% endblock %}
+
+{% block content %}
+{% if mensaje_de_error %}
+  <p><strong>{{ mensaje_de_error }}</strong></p>
+  {% if errores %}
+    <ul>
+    {% for error in errores %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'cursos:index' %}','_self')">Volver</button>
+{% else %}
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form action="{% url 'cursos:crearCurso' %}" method="post" enctype="multipart/form-data" role="form">
+    {% csrf_token %}
+      <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
+      {{ cursoForm | crispy }}
+      <hr>
+      <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'cursos:index' %}','_self')">Cancelar</button>
+      <button type="submit" value="Crear" class="btn btn-primary">Crear</button>
+    </form>
+    <hr>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+  {% for field in cursoForm %}
+    $("#{{ field.auto_id }}").addClass("form-control");
+  {% endfor %}
+</script>
+{% endblock %}
