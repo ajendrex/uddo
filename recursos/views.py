@@ -41,10 +41,12 @@ def detalle(request, recurso_id):
   recurso = Recurso.objects.get(id=recurso_id) 
   objetos["recurso"] = recurso
   u = request.user
-  if usuarioEsProfesor(u) and recurso.curso.profesor != u:
-    objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
-  elif usuarioEsProveedor(u) and recurso.proveedor != u:
-    objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
+  if usuarioEsProfesor(u):
+    if recurso.curso.profesor != u:
+      objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
+  elif usuarioEsProveedor(u):
+    if recurso.proveedor != u:
+      objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
   elif not usuarioEsInterno(u):
     objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
 
@@ -103,14 +105,18 @@ def crearRecurso(request):
 def asignarProveedor(request, recurso_id):
   ProveedorForm = modelform_factory(Recurso, fields=('proveedor',))
   recurso = Recurso.objects.get(id=recurso_id)
+  proveedorAnterior = recurso.proveedor
   objetos = {"recurso": recurso}
   if not usuarioEsCoordinador(request.user):
     objetos["mensaje_de_error"] = "Usted no puede asignar proveedor al recurso."
   elif request.method == 'POST':
     proveedorForm = ProveedorForm(request.POST, instance=recurso)
     if proveedorForm.is_valid():
-      proveedorForm.save()
-      return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+      r = proveedorForm.save(commit=False)
+      if r.proveedor != proveedorAnterior:
+        r.entrega_estimada = None
+      r.save()
+      return redirect(reverse('recursos:detalle', args=(r.id,)))
     else:
       objetos["mensaje_de_error"] = "Algo salió mal..."
   else:
@@ -137,12 +143,8 @@ def definirFechaEntrega(request, recurso_id):
     if request.method == 'POST':
       entregaForm = EntregaForm(request.POST, instance=recurso)
       if entregaForm.is_valid():
-        r = entregaForm.save(commit=False)
-        if (r.id != recurso.id):
-          objetos["mensaje_de_error"] = "Algo salió mal, parece un intento por modificar otro recurso."
-        else:
-          r.save()
-          return redirect(reverse('recursos:detalle', args=(r.id,)))
+        entregaForm.save()
+        return redirect(reverse('recursos:detalle', args=(r.id,)))
       else:
         objetos["mensaje_de_error"] = "Fecha ingresada no es válida."
     else:

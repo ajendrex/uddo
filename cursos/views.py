@@ -11,24 +11,18 @@ from cursos.forms import CursoForm
 from utils.utils import *
 
 # Create your views here.
-class IndexView(generic.ListView):
-  model = Curso
-  template_name = 'cursos/index.html'
-  context_object_name = 'latest_cursos_list'
-
 @login_required
 def index(request):
   u = request.user
   objetos = {}
   if usuarioEsCoordinador(u) or usuarioEsSupervisor(u):
     objetos["cursos_list"] = Curso.objects.all()
+  elif usuarioEsProfesor(u):
+    objetos["cursos_list"] = Curso.objects.filter(profesor=u)
+  elif usuarioEsDI(u):
+    objetos["cursos_list"] = Curso.objects.filter(owner=u)
   else:
-    if usuarioEsProfesor(u):
-      objetos["cursos_list"] = Curso.objects.filter(profesor=u)
-    elif usuarioEsDI(u):
-      objetos["cursos_list"] = Curso.objects.filter(owner=u)
-    else:
-      objetos["mensaje_de_error"] = "No posee privilegios para ver esta página."
+    objetos["mensaje_de_error"] = "No posee privilegios para ver esta página."
       
   template = loader.get_template('cursos/index.html')
   context = RequestContext(request, objetos)
