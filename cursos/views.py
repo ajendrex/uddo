@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from cursos.models import Curso, ComentarioCurso
 from cursos.forms import CursoForm
 from utils.utils import *
+from recursos.models import Recurso
 
 # Create your views here.
 @login_required
@@ -28,10 +29,25 @@ def index(request):
   context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
 
+@login_required 
+def detalle(request, curso_id):
+  objetos = {}
+  c = Curso.objects.get(id=curso_id) 
+  objetos["curso"] = c
+  u = request.user
+  if usuarioEsProfesor(u):
+    if c.profesor != u:
+      objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este curso."
+  elif usuarioEsProveedor(u):
+    objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este elemento."
+  elif not usuarioEsInterno(u):
+    objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este elemento."
 
-class DetailView(generic.DetailView):
-  model = Curso
-  template_name = 'cursos/detalle.html'
+  objetos["recursos"] = Recurso.objects.filter(curso=c)
+
+  template = loader.get_template('cursos/detalle.html')
+  context = RequestContext(request, objetos)
+  return HttpResponse(template.render(context))
 
 @login_required
 def comentar(request, curso_id):

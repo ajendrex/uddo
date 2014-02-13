@@ -42,5 +42,13 @@
       <input type="submit" value="Comentar" class="btn btn-default"/>
     </form>
   </div>
+  <div class="col-md-2">
+    <h5>Recursos creados para este curso:</h5>
+    <ul>
+      {% for recurso in recursos %}
+        <li><a href="{% url 'recursos:detalle' recurso.id %}">{{ recurso.nombre }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
 {% endblock %}

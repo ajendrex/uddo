@@ -18,13 +18,13 @@
           <th>Creador:</th>
           <td>{{ recurso.creador.get_full_name }}</td>
           <th>Curso:</th>
-          <td><a href="{% url 'cursos:detalle' recurso.curso.id %}">{{ recurso.curso.codigo }} {{ recurso.curso.nombre }}</a></td>
+          <td><a href="{% url 'cursos:detalle' recurso.curso.id %}">{{ recurso.curso }}</a></td>
         </tr>
         <tr>
           <th>Tipo de Recurso:</th>
-          <td>{{ recurso.tipo }}</td>
+          <td>{{ recurso.get_tipo_display }}</td>
           <th>Categoría:</th>
-          <td>{{ recurso.categoria }}</td>
+          <td>{{ recurso.get_categoria_display }}</td>
         </tr>
         <tr>
           <th>Fecha de Creación:</th>

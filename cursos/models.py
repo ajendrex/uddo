@@ -12,7 +12,7 @@ class Curso(models.Model):
   fec_modificacion = models.DateTimeField(auto_now = True)
 
   def __str__(self):
-    return self.codigo
+    return self.codigo + " - " + self.nombre
 
 class ComentarioCurso(models.Model):
   owner = models.ForeignKey(User)
