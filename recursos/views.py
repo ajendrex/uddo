@@ -10,7 +10,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.admin import widgets
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso
+from recursos.models import Recurso, ComentarioRecurso, RecursoForm, InsumoRecurso, VersionRecurso
 from cursos.models import Curso
 from utils.utils import *
 
@@ -151,5 +151,28 @@ def definirFechaEntrega(request, recurso_id):
       objetos["entregaForm"] = EntregaForm(instance=recurso)
 
   template = loader.get_template('recursos/definirFechaEntrega.html')
+  context = RequestContext(request, objetos)
+  return HttpResponse(template.render(context))
+
+@login_required
+def entregar(request, recurso_id):
+  VersionFormset = inlineformset_factory(Recurso, VersionRecurso, extra=1)
+  recurso = Recurso.objects.get(id=recurso_id)
+  objetos = {}
+  if recurso.proveedor != request.user:
+    objetos["mensaje_de_error"] = "Usted no puede entregar una versión para este recurso."
+  else:
+    if request.method == 'POST':
+      versionFormset = VersionFormset(request.POST, request.FILES, instance=recurso)
+      for versionForm in versionFormset:
+        if versionForm.is_valid():
+          versionForm.save()
+      return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+    else:
+      versionFormset = VersionFormset(instance=recurso)
+      objetos["recurso"] = recurso
+      objetos["versionFormset"] = VersionFormset(instance=recurso)
+
+  template = loader.get_template('recursos/entregar.html')
   context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))

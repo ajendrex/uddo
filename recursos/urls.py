@@ -10,4 +10,5 @@ urlpatterns = patterns('',
                        url(r'^(?P<recurso_id>\d+)/comentar/$', views.comentar, name="comentar"),
                        url(r'^(?P<recurso_id>\d+)/asignarProveedor/$', views.asignarProveedor, name="asignarProveedor"),
                        url(r'^(?P<recurso_id>\d+)/definirFechaEntrega/$', views.definirFechaEntrega, name="definirFechaEntrega"),
+                       url(r'^(?P<recurso_id>\d+)/entregar/$', views.entregar, name="entregar"),
                        )
