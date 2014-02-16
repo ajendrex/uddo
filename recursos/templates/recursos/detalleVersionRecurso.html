@@ -35,6 +35,24 @@
             {{ version.proveedor }}
           </td>
         </tr>
+        <tr>
+          <th>Aprobaciones</th>
+          <td colspan=3>
+            <table class="table table-bordered">
+              <tr>
+                <th>DI</th>
+                <td> {% if version.aprobado_di %} Sí {% else %} No {% endif %}</td>
+                <th>Profesor</th>
+                <td> {% if version.aprobado_profesor %} Sí {% else %} No {% endif %}</td>
+                <th>Coordinador</th>
+                <td> {% if version.aprobado_coordinador %} Sí {% else %} No {% endif %}</td>
+              </tr>
+            </table>
+            {% if mostrarBotonAprobacion %} 
+            <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:aprobarVersion' version.id %}', '_self')">Aprobar Entrega</button>
+            {% endif %}
+          </td>
+        </tr>
       </table>
       <ul>
       {% for comentario in version.comentarioversionrecurso_set.all %}

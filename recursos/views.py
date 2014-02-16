@@ -192,13 +192,22 @@ def detalleVersionRecurso(request, version_id):
   objetos = {}
   version = VersionRecurso.objects.get(id=version_id) 
   objetos["version"] = version
+  objetos["mostrarBotonAprobacion"] = False
   u = request.user
   if usuarioEsProfesor(u):
     if version.recurso.curso.profesor != u:
       objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
+    if not version.aprobado_profesor:
+      objetos["mostrarBotonAprobacion"] = True
   elif usuarioEsProveedor(u):
     if version.recurso.proveedor != u:
       objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
+  elif usuarioEsDI(u):
+    if not version.aprobado_di:
+      objetos["mostrarBotonAprobacion"] = True
+  elif usuarioEsCoordinador(u):
+    if not version.aprobado_coordinador:
+      objetos["mostrarBotonAprobacion"] = True
   elif not usuarioEsInterno(u):
     objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
 
@@ -215,4 +224,19 @@ def comentarVersion(request, version_id):
   comentario.version = v
   comentario.comentario = request.POST['texto']
   comentario.save()
+  return redirect(reverse('recursos:detalleVersionRecurso', args=(v.id,)))
+
+@login_required
+def aprobarVersion(request, version_id):
+  v = get_object_or_404(VersionRecurso, pk=version_id)
+  u = request.user
+
+  if usuarioEsDI(u) and v.recurso.creador == u:
+    v.aprobado_di = True
+  if usuarioEsProfesor(u) and v.recurso.curso.profesor == u:
+    v.aprobado_profesor = True
+  if usuarioEsCoordinador(u):
+    v.aprobado_coordinador = True
+
+  v.save()
   return redirect(reverse('recursos:detalleVersionRecurso', args=(v.id,)))

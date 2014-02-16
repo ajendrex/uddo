@@ -13,4 +13,5 @@ urlpatterns = patterns('',
                        url(r'^(?P<recurso_id>\d+)/entregar/$', views.entregar, name="entregar"),
                        url(r'^entregas/(?P<version_id>\d+)/$', views.detalleVersionRecurso, name="detalleVersionRecurso"),
                        url(r'^entregas/(?P<version_id>\d+)/comentarVersion/$', views.comentarVersion, name="comentarVersion"),
+                       url(r'^entregas/(?P<version_id>\d+)/aprobar/$', views.aprobarVersion, name="aprobarVersion"),
                        )
