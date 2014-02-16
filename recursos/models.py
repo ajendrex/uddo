@@ -34,9 +34,6 @@ class Recurso(models.Model):
   fecha_creacion = models.DateTimeField(auto_now_add = True)
   entrega_estimada = models.DateTimeField(null=True, blank=True)
   total_versiones = models.IntegerField(default=0)
-  aprobado_di = models.BooleanField(default=False)
-  aprobado_profesor = models.BooleanField(default=False)
-  aprobado_coordinador = models.BooleanField(default=False)
 
   def __str__(self):
     return self.nombre
@@ -63,6 +60,9 @@ class VersionRecurso(models.Model):
   recurso = models.ForeignKey(Recurso)
   version = models.IntegerField()
   proveedor = models.ForeignKey(User)
+  aprobado_di = models.BooleanField(default=False)
+  aprobado_profesor = models.BooleanField(default=False)
+  aprobado_coordinador = models.BooleanField(default=False)
 
   def __str__(self):
     return os.path.basename(self.archivo.name)
