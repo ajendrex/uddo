@@ -34,7 +34,7 @@
             <ul>
               {% load mytags %}
               {% for insumo in recurso.insumorecurso_set.all %}
-                <li><a href="{{ insumo.archivo.url }}">{{ insumo.archivo.name | basename }}</a></li>
+                <li><a href="{{ insumo.archivo.url }}">{{ insumo }}</a></li>
               {% empty %}
                 <li>No hay insumos.</li>
               {% endfor %}
@@ -64,9 +64,20 @@
               {{ recurso.entrega_estimada|date:"DATE_FORMAT"}}
             {% else %}
               {% ifusergroup Proveedores %}
-                <a href="{% url 'recursos:definirFechaEntrega' recurso.id %}">Informar</a>
+                <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:definirFechaEntrega' recurso.id %}', '_self')">Informar</button>
               {% endifusergroup %}
             {% endif %}
+          </td>
+          <th>Entregas:</th>
+          <td>
+            <ul>
+              {% for version in recurso.versionrecurso_set.all %}
+                <li><a href="{{ version.archivo.url }}">{{ version }}</a></li>
+              {% empty %}
+                <li>No hay entregas.</li>
+              {% endfor %}
+            </ul>
+            <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:entregar' recurso.id %}', '_self')">Nueva Entrega</button>
           </td>
         </tr>
       </table>

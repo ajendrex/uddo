@@ -1,0 +1,55 @@
+{% extends "recursos/base.html" %}
+
+{% block title %}
+    <h1>"{{version.recurso.nombre}}" v{{ version.version }}</h1>
+{% endblock %}
+
+{% block content %}
+{% if mensaje_de_error %}
+  <p><strong>{{ mensaje_de_error }}</strong></p>
+{% else %}
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <div>
+        <p class="bg-info">{{version.recurso.descripcion}}</p>
+      </div>
+      <table class="table table-condensed" id="info-recurso">
+        <tr>
+          <th>Creador:</th>
+          <td>{{ version.recurso.creador.get_full_name }}</td>
+          <th>Curso:</th>
+          <td><a href="{% url 'cursos:detalle' version.recurso.curso.id %}">{{ version.recurso.curso }}</a></td>
+        </tr>
+        <tr>
+          <th>Tipo de Recurso:</th>
+          <td>{{ version.recurso.get_tipo_display }}</td>
+          <th>Categoría:</th>
+          <td>{{ version.recurso.get_categoria_display }}</td>
+        </tr>
+        <tr>
+          <th>Fecha de Entrega:</th>
+          <td>{{ version.recurso.fecha_entrega|date:"DATE_FORMAT" }}</td>
+          <th>Proveedor:</th>
+          <td>
+            {{ version.proveedor }}
+          </td>
+        </tr>
+      </table>
+      <ul>
+      {% for comentario in version.comentarioversionrecurso_set.all %}
+        <li>{{ comentario.autor }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_creacion|date:"DATE_FORMAT" }}</small></li>
+      {% endfor %}
+      </ul>
+
+      <form action="{% url 'recursos:comentarVersion' version.id %}" method="post" role="form">
+      {% csrf_token %}
+        <div class="form-group">
+        <label for="texto">Comentario</label>
+        <input id="texto" type="text" name="texto" placeholder="Nuevo Comentario" class="form-control"/>
+        </div>
+        <input type="submit" value="Comentar" class="btn btn-default"/>
+      </form>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

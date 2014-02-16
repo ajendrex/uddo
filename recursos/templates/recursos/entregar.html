@@ -20,8 +20,7 @@
     <div class="col-md-8 col-md-offset-2">
       <form action="{% url 'recursos:entregar' recurso.id %}" method="post" enctype="multipart/form-data" role="form">
       {% csrf_token %}
-        <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->
-        {{ versionFormset | crispy }}
+        {{ versionForm | crispy }}
         <hr>
         <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:detalle' recurso.id %}','_self')">Cancelar</button>
         <button type="submit" value="Aceptar" class="btn btn-primary">Entregar</button>
@@ -29,11 +28,4 @@
     </div>
   </div>
 {% endif %}
-{% endblock %}
-
-{% block scripts %}
-  {{ block.super }}
-  <script type="text/javascript">
-    $("#id_entrega_estimada").addClass("form-control");
-  </script>
 {% endblock %}

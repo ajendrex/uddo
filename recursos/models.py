@@ -3,8 +3,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from cursos.models import Curso
-from django.forms import ModelForm
 import datetime
+import os
 
 # Create your models here.
 class Recurso(models.Model):
@@ -33,6 +33,7 @@ class Recurso(models.Model):
   link = models.CharField(max_length = 300, blank=True)
   fecha_creacion = models.DateTimeField(auto_now_add = True)
   entrega_estimada = models.DateTimeField(null=True, blank=True)
+  total_versiones = models.IntegerField(default=0)
   aprobado_di = models.BooleanField(default=False)
   aprobado_profesor = models.BooleanField(default=False)
   aprobado_coordinador = models.BooleanField(default=False)
@@ -49,26 +50,35 @@ class Recurso(models.Model):
     primeraEntrega = self.versionrecurso_set.all()[0]
     return self.entrega_estimada + datetime.timedelta(days=1) <= primeraEntrega.fecha_entrega
 
-class RecursoForm(ModelForm):
-  class Meta:
-    model = Recurso
-    fields = ['nombre', 'curso', 'tipo', 'categoria', 'descripcion']
-
 class InsumoRecurso(models.Model):
   archivo = models.FileField(upload_to="insumos/%Y/%m/%d/")
   recurso = models.ForeignKey(Recurso)
+
+  def __str__(self):
+    return os.path.basename(self.archivo.name)
 
 class VersionRecurso(models.Model):
   archivo = models.FileField(upload_to="versiones/%Y/%m/%d/")
   fecha_entrega = models.DateTimeField(auto_now_add = True)
   recurso = models.ForeignKey(Recurso)
+  version = models.IntegerField()
+  proveedor = models.ForeignKey(User)
+
+  def __str__(self):
+    return os.path.basename(self.archivo.name)
 
 class Tag(models.Model):
   tag = models.CharField(max_length = 100, unique=True)
   recursos = models.ManyToManyField(Recurso, related_name="tags")
 
 class ComentarioRecurso(models.Model):
-  owner = models.ForeignKey(User, null=True)
+  autor = models.ForeignKey(User, null=True)
   recurso = models.ForeignKey(Recurso)
   comentario = models.TextField()
-  fec_creacion = models.DateTimeField(auto_now_add = True) #Esta fecha será la real en que se crea el comentario
+  fec_creacion = models.DateTimeField(auto_now_add = True) 
+
+class ComentarioVersionRecurso(models.Model):
+  autor = models.ForeignKey(User, null=True)
+  version = models.ForeignKey(VersionRecurso)
+  comentario = models.TextField()
+  fec_creacion = models.DateTimeField(auto_now_add = True)

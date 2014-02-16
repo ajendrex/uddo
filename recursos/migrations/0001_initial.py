@@ -4,49 +4,46 @@ from django.conf import settings
 
 
 class Migration(migrations.Migration):
-    
+
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('cursos', '__first__'),
+        ('cursos', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Tag',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('tag', models.CharField(unique=True, max_length=100)),
-                ('recursos', models.ManyToManyField(to='recursos.Recurso')),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
             name='Recurso',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
                 ('nombre', models.CharField(max_length=100)),
-                ('curso', models.ForeignKey(to='cursos.Curso', to_field='id')),
-                ('creador', models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='id')),
-                ('tipo', models.CharField(max_length=3, choices=(('INT', 'Interactivo'), ('REC', 'RecreaciÃ³n'), ('ANI', 'AnimaciÃ³n'), ('ENT', 'Entrevista'), ('DIG', 'DigitalizaciÃ³n'), ('DIA', 'DiagramaciÃ³n'), ('GRA', 'GrÃ¡fica'), ('FOT', 'FotografÃ\xada'), ('EST', 'Estilaje')))),
-                ('categoria', models.CharField(max_length=1, choices=(('B', 'BÃ¡sico'), ('M', 'Medio'), ('F', 'Full'), ('E', 'Especial')))),
-                ('proveedor', models.ForeignKey(to=settings.AUTH_USER_MODEL, to_field='id', null=True)),
-                ('costo', models.IntegerField()),
-                ('costoFinal', models.IntegerField()),
-                ('descripcion', models.CharField(max_length=5000)),
-                ('link', models.CharField(max_length=300)),
+                ('curso', models.ForeignKey(to_field='id', null=True, to='cursos.Curso')),
+                ('creador', models.ForeignKey(to_field='id', to=settings.AUTH_USER_MODEL)),
+                ('tipo', models.CharField(max_length=3, choices=[('INT', 'Interactivo'), ('REC', 'Recreación'), ('ANI', 'Animación'), ('ENT', 'Entrevista'), ('DIG', 'Digitalización'), ('DIA', 'Diagramación'), ('GRA', 'Gráfica'), ('FOT', 'Fotografía'), ('EST', 'Estilaje')])),
+                ('categoria', models.CharField(max_length=1, choices=[('B', 'Básico'), ('M', 'Medio'), ('F', 'Full'), ('E', 'Especial')])),
+                ('proveedor', models.ForeignKey(to_field='id', null=True, to=settings.AUTH_USER_MODEL, blank=True)),
+                ('costo', models.IntegerField(null=True, blank=True)),
+                ('costoFinal', models.IntegerField(null=True, blank=True)),
+                ('descripcion', models.TextField(blank=True)),
+                ('link', models.CharField(max_length=300, blank=True)),
+                ('fecha_creacion', models.DateTimeField(auto_now_add=True)),
+                ('entrega_estimada', models.DateTimeField(null=True, blank=True)),
+                ('total_versiones', models.IntegerField(default=0)),
+                ('aprobado_di', models.BooleanField(default=False)),
+                ('aprobado_profesor', models.BooleanField(default=False)),
+                ('aprobado_coordinador', models.BooleanField(default=False)),
             ],
             options={
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='FechaEntrega',
+            name='ComentarioRecurso',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('fecha', models.DateTimeField()),
-                ('recurso', models.ForeignKey(to='recursos.Recurso', to_field='id')),
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('autor', models.ForeignKey(to_field='id', null=True, to=settings.AUTH_USER_MODEL)),
+                ('recurso', models.ForeignKey(to_field='id', to='recursos.Recurso')),
+                ('comentario', models.TextField()),
+                ('fec_creacion', models.DateTimeField(auto_now_add=True)),
             ],
             options={
             },
@@ -55,9 +52,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='InsumoRecurso',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
                 ('archivo', models.FileField(upload_to='insumos/%Y/%m/%d/')),
-                ('recurso', models.ForeignKey(to='recursos.Recurso', to_field='id')),
+                ('recurso', models.ForeignKey(to_field='id', to='recursos.Recurso')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Tag',
+            fields=[
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('tag', models.CharField(unique=True, max_length=100)),
+                ('recursos', models.ManyToManyField(to='recursos.Recurso')),
             ],
             options={
             },
@@ -66,9 +74,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='VersionRecurso',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
                 ('archivo', models.FileField(upload_to='versiones/%Y/%m/%d/')),
-                ('recurso', models.ForeignKey(to='recursos.Recurso', to_field='id')),
+                ('fecha_entrega', models.DateTimeField(auto_now_add=True)),
+                ('recurso', models.ForeignKey(to_field='id', to='recursos.Recurso')),
+                ('version', models.IntegerField()),
+                ('proveedor', models.ForeignKey(to_field='id', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ComentarioVersionRecurso',
+            fields=[
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('autor', models.ForeignKey(to_field='id', null=True, to=settings.AUTH_USER_MODEL)),
+                ('version', models.ForeignKey(to_field='id', to='recursos.VersionRecurso')),
+                ('comentario', models.TextField()),
+                ('fec_creacion', models.DateTimeField(auto_now_add=True)),
             ],
             options={
             },
