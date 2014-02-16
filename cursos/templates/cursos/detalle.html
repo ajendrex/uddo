@@ -47,7 +47,10 @@
     <ul>
       {% for recurso in recursos %}
         <li><a href="{% url 'recursos:detalle' recurso.id %}">{{ recurso.nombre }}</a></li>
+      {% empty %}
+        <li>No hay recursos</li>
       {% endfor %}
+      <button class="btn btn-primary" onclick="javascript: top.open('{% url 'recursos:crearRecurso' %}?curso={{ curso.id }}', '_self')">Crear Recurso</button>
     </ul>
   </div>
 </div>

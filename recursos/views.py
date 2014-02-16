@@ -11,7 +11,7 @@ from django.contrib.admin import widgets
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from recursos.models import Recurso, ComentarioRecurso, InsumoRecurso, VersionRecurso
-from recursos.forms import RecursoForm, VersionForm
+from recursos.forms import RecursoForm, VersionForm, ComentarioVersionRecurso
 from cursos.models import Curso
 from utils.utils import *
 
@@ -94,7 +94,11 @@ def crearRecurso(request):
       else:
         objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!."
     else:
-      objetos["recursoForm"] = RecursoForm()
+      if request.GET["curso"]:
+        objetos["recursoForm"] = RecursoForm(initial={'curso':int(request.GET["curso"])})
+      else:
+        objetos["recursoForm"] = RecursoForm()
+      objetos["recursoForm"].fields["curso"].queryset = Curso.objects.filter(owner=request.user)
       objetos["insumoFormset"] = InsumoFormset()
       objetos["insumoForm"] = InsumoFormset()[0]
 
@@ -145,7 +149,7 @@ def definirFechaEntrega(request, recurso_id):
       entregaForm = EntregaForm(request.POST, instance=recurso)
       if entregaForm.is_valid():
         entregaForm.save()
-        return redirect(reverse('recursos:detalle', args=(r.id,)))
+        return redirect(reverse('recursos:detalle', args=(recurso.id,)))
       else:
         objetos["mensaje_de_error"] = "Fecha ingresada no es válida."
     else:
@@ -167,7 +171,11 @@ def entregar(request, recurso_id):
       if versionForm.is_valid():
         version = versionForm.save(commit=False)
         version.recurso_id = recurso.id
+        version.version = recurso.total_versiones + 1
+        version.proveedor = request.user
         version.save()
+        recurso.total_versiones += 1
+        recurso.save()
         return redirect(reverse('recursos:detalle', args=(recurso.id,)))
       else:
         objetos["mensaje_de_error"] = "Hubo un error subiendo el archivo" + versionForm.errors
@@ -179,6 +187,7 @@ def entregar(request, recurso_id):
   context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
 
+@login_required
 def detalleVersionRecurso(request, version_id):
   objetos = {}
   version = VersionRecurso.objects.get(id=version_id) 
@@ -193,6 +202,17 @@ def detalleVersionRecurso(request, version_id):
   elif not usuarioEsInterno(u):
     objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este recurso."
 
-  template = loader.get_template('recursos/detalleVersinoRecurso.html')
+  template = loader.get_template('recursos/detalleVersionRecurso.html')
   context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
+
+@login_required
+def comentarVersion(request, version_id):
+  v = get_object_or_404(VersionRecurso, pk=version_id)
+
+  comentario = ComentarioVersionRecurso()
+  comentario.autor = request.user
+  comentario.version = v
+  comentario.comentario = request.POST['texto']
+  comentario.save()
+  return redirect(reverse('recursos:detalleVersionRecurso', args=(v.id,)))

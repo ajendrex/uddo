@@ -11,5 +11,6 @@ urlpatterns = patterns('',
                        url(r'^(?P<recurso_id>\d+)/asignarProveedor/$', views.asignarProveedor, name="asignarProveedor"),
                        url(r'^(?P<recurso_id>\d+)/definirFechaEntrega/$', views.definirFechaEntrega, name="definirFechaEntrega"),
                        url(r'^(?P<recurso_id>\d+)/entregar/$', views.entregar, name="entregar"),
-                       url(r'^(?P<version_id>\d+)/$', views.detalleVersionRecurso, name="detalleVersionRecurso"),
+                       url(r'^entregas/(?P<version_id>\d+)/$', views.detalleVersionRecurso, name="detalleVersionRecurso"),
+                       url(r'^entregas/(?P<version_id>\d+)/comentarVersion/$', views.comentarVersion, name="comentarVersion"),
                        )

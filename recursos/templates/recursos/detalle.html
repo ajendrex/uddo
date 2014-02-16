@@ -72,12 +72,14 @@
           <td>
             <ul>
               {% for version in recurso.versionrecurso_set.all %}
-                <li><a href="{{ version.archivo.url }}">{{ version }}</a></li>
+                <li><a href="{% url 'recursos:detalleVersionRecurso' version.id %}">{{ version }}</a></li>
               {% empty %}
                 <li>No hay entregas.</li>
               {% endfor %}
             </ul>
-            <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:entregar' recurso.id %}', '_self')">Nueva Entrega</button>
+            {% ifusergroup Proveedores %}
+              <button class="btn-mini btn-primary" onclick="javascript: top.open('{% url 'recursos:entregar' recurso.id %}', '_self')">Nueva Entrega</button>
+            {% endifusergroup %}
           </td>
         </tr>
       </table>
