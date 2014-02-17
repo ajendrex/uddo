@@ -7,8 +7,7 @@
 {% block content %}
 {% if mensaje_de_error %}
   <p><strong>{{ mensaje_de_error }}</strong></p>
-{% endif %}
-
+{% else %}
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
     <table class="table table-condensed" id="info-curso">
@@ -54,4 +53,5 @@
     </ul>
   </div>
 </div>
+{% endif %}
 {% endblock %}

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from cursos.models import Curso
+from utils.utils import *
 import datetime
 import os
+
 
 # Create your models here.
 class Recurso(models.Model):
@@ -78,10 +80,16 @@ class ComentarioRecurso(models.Model):
   autor = models.ForeignKey(User, null=True)
   recurso = models.ForeignKey(Recurso)
   comentario = models.TextField()
-  fec_creacion = models.DateTimeField(auto_now_add = True) 
+  fec_creacion = models.DateTimeField(auto_now_add = True)
+
+  def autorEsProveedor(self):
+    return usuarioEsProveedor(self.autor)
 
 class ComentarioVersionRecurso(models.Model):
   autor = models.ForeignKey(User, null=True)
   version = models.ForeignKey(VersionRecurso)
   comentario = models.TextField()
   fec_creacion = models.DateTimeField(auto_now_add = True)
+
+  def autorEsProveedor(self):
+    return usuarioEsProveedor(self.autor)

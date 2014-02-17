@@ -42,6 +42,7 @@
           </td>
         </tr>
         <tr>
+          {% ifnotusergroup Profesores %}
           <th>Proveedor:</th>
           <td>
             {% if recurso.proveedor %}
@@ -56,6 +57,7 @@
               {% endifusergroup %}
             {% endif %}
           </td>
+          {% endifnotusergroup %}
         </tr>
         <tr>
           <th>Fecha Entrega:</th>
@@ -89,7 +91,18 @@
       </table>
       <ul>
       {% for comentario in recurso.comentariorecurso_set.all %}
-        <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_creacion|date:"DATE_FORMAT" }}</small></li>
+        <li><small>
+          {% ifusergroup Profesores %}
+            {% if comentario.autorEsProveedor %}
+              El Proveedor
+            {% else %}
+              {{ comentario.autor }}
+            {% endif %}
+          {% endifusergroup %}
+          {% ifnotusergroup Profesores %}
+              {{ comentario.autor }}
+          {% endifnotusergroup %}
+          </small> dijo {{ comentario.comentario }} el <small>{{ comentario.fec_creacion|date:"DATE_FORMAT" }}</small></li>
       {% endfor %}
       </ul>
 

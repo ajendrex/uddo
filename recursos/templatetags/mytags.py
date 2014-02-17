@@ -28,7 +28,22 @@ def ifusergroup(parser, token):
     parser.delete_first_token()
     return GroupCheckNode(group, nodelist)
 
+@register.tag()
+def ifnotusergroup(parser, token):
+    """ Check to see if the currently logged in user doesn't belong to a specific
+    group. Requires the Django authentication contrib app and middleware.
 
+    Usage: {% ifnotusergroup Admins %} ... {% endifnotusergroup %}
+
+    """
+    try:
+        tag, group = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError("Tag 'ifnotusergroup' requires 1 argument.")
+    nodelist = parser.parse(('endifnotusergroup',))
+    parser.delete_first_token()
+    return NotGroupCheckNode(group, nodelist)
+  
 class GroupCheckNode(template.Node):
     def __init__(self, group, nodelist):
         self.group = group
@@ -44,3 +59,19 @@ class GroupCheckNode(template.Node):
         if group in user.groups.all():
             return self.nodelist.render(context)
         return ''
+
+class NotGroupCheckNode(template.Node):
+    def __init__(self, group, nodelist):
+        self.group = group
+        self.nodelist = nodelist
+    def render(self, context):
+        user = resolve_variable('user', context)
+        if not user.is_authenticated:
+            return ''
+        try:
+            group = Group.objects.get(name=self.group)
+        except Group.DoesNotExist:
+            return ''
+        if group in user.groups.all():
+            return ''
+        return self.nodelist.render(context)
