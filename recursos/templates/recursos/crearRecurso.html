@@ -18,6 +18,7 @@
       <div id="insumos">
         <h3>Insumos:</h3>
         {{ insumoFormset | crispy }}
+        <button type="button" id="btn-addInsumo" onclick="javascript: addInsumo()">+</button>
       </div>
       <hr>
       <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'recursos:index' %}','_self')">Cancelar</button>
@@ -35,5 +36,12 @@
   {% for field in recursoForm %}
     $("#{{ field.auto_id }}").addClass("form-control");
   {% endfor %}
+  var form_count = {{insumoFormset.total_form_count}};
+  function addInsumo() {
+    var form = '{{insumoFormset.empty_form| crispy |escapejs}}'.replace(/__prefix__/g, form_count);
+    $('.multiField').append(form)
+    form_count++;
+    $('#id_insumorecurso_set-TOTAL_FORMS').val(form_count);
+  }
 </script>
 {% endblock %}

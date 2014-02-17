@@ -94,7 +94,7 @@ def crearRecurso(request):
       else:
         objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!."
     else:
-      if request.GET["curso"]:
+      if "curso" in request.GET:
         objetos["recursoForm"] = RecursoForm(initial={'curso':int(request.GET["curso"])})
       else:
         objetos["recursoForm"] = RecursoForm()

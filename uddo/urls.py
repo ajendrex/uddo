@@ -7,9 +7,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'uddo.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
+    url(r'^$', 'uddo.views.home', name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^cursos/', include('cursos.urls', namespace='cursos')),
     url(r'^recursos/', include('recursos.urls', namespace='recursos')),
