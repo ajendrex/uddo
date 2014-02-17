@@ -72,7 +72,11 @@
           <td>
             <ul>
               {% for version in recurso.versionrecurso_set.all %}
-                <li><a href="{% url 'recursos:detalleVersionRecurso' version.id %}">{{ version }}</a></li>
+                <li><a href="{% url 'recursos:detalleVersionRecurso' version.id %}">{{ version }}</a>
+                {% if version.aprobado %}
+                  (aprobado)
+                {% endif %}
+                </li>
               {% empty %}
                 <li>No hay entregas.</li>
               {% endfor %}

@@ -67,6 +67,9 @@ class VersionRecurso(models.Model):
   def __str__(self):
     return os.path.basename(self.archivo.name)
 
+  def aprobado(self):
+    return self.aprobado_di and self.aprobado_profesor and self.aprobado_coordinador
+
 class Tag(models.Model):
   tag = models.CharField(max_length = 100, unique=True)
   recursos = models.ManyToManyField(Recurso, related_name="tags")
