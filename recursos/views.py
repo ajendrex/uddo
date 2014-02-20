@@ -8,6 +8,7 @@ from django.forms.models import inlineformset_factory
 from django.forms.models import modelform_factory
 from django.contrib.auth.models import User, Group
 from django.contrib.admin import widgets
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from recursos.models import Recurso, ComentarioRecurso, InsumoRecurso, VersionRecurso
@@ -19,18 +20,39 @@ from utils.utils import *
 def index(request):
   u = request.user
   objetos = {}
+  columns = { 'nombre': "nombre",
+              'curso': "curso",
+              'creacion': "fecha_creacion",
+              'proveedor': "proveedor",
+              'entregaEstimada': "entrega_estimada",
+            }
+  sortby = request.GET.get('sortby')
+  objetos["sortby"] = sortby
+  if sortby in columns:
+    sortString = columns[sortby]
+  else:
+    sortString = "?"
+
   if usuarioEsCoordinador(u) or usuarioEsSupervisor(u):
-    objetos["recursos_list"] = Recurso.objects.all()
+    recursos_list = Recurso.objects.all()
   else:
     if usuarioEsProfesor(u):
       cursosProfesor = Curso.objects.filter(profesor=u)
-      objetos["recursos_list"] = Recurso.objects.filter(curso__in=cursosProfesor)
+      recursos_list = Recurso.objects.filter(curso__in=cursosProfesor).order_by(sortString)
     elif usuarioEsProveedor(u):
-      objetos["recursos_list"] = Recurso.objects.filter(proveedor=u)
+      recursos_list = Recurso.objects.filter(proveedor=u).order_by(sortString)
     elif usuarioEsDI(u):
-      objetos["recursos_list"] = Recurso.objects.filter(creador=u)
+      recursos_list = Recurso.objects.filter(creador=u).order_by(sortString)
     else:
       objetos["mensaje_de_error"] = "No posee privilegios para ver esta página."
+  paginator = Paginator(recursos_list, 10)
+  page = request.GET.get('page')
+  try:
+    objetos["recursos_list"] = paginator.page(page)
+  except PageNotAnInteger:
+    objetos["recursos_list"] = paginator.page(1)
+  except EmptyPage:
+    objetos["recursos_list"] = paginator.page(paginator.num_pages)
       
   template = loader.get_template('recursos/index.html')
   context = RequestContext(request, objetos)

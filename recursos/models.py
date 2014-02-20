@@ -40,14 +40,21 @@ class Recurso(models.Model):
   def __str__(self):
     return self.nombre
 
+  def cantEntregas(self):
+    return self.versionrecurso_set.count()
+
   def sinEntregas(self):
-    return not self.versionrecurso_set.all().length()
+    return not self.cantEntregas()
+
+  def ultimaEntrega(self):
+    if self.cantEntregas():
+      return self.versionrecurso_set.all()[self.cantEntregas() - 1]
+    return None
 
   def entregaAtrasada(self):
     if self.sinEntregas():
       return True
-    primeraEntrega = self.versionrecurso_set.all()[0]
-    return self.entrega_estimada + datetime.timedelta(days=1) <= primeraEntrega.fecha_entrega
+    return self.entrega_estimada <= self.ultimaEntrega().fecha_entrega
 
 class InsumoRecurso(models.Model):
   archivo = models.FileField(upload_to="insumos/%Y/%m/%d/")

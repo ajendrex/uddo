@@ -9,16 +9,49 @@
   <p><strong>{{ mensaje_de_error }}</strong></p>
 {% else %}
   <div class="row">
-    <div class="col-md-8 col-md-offset-2">
+    <div class="col-md-10">
+    <div name="paginador">
+     <span class="step-links">
+        {% if recursos_list.has_previous %}
+            <a href="?page={{ recursos_list.previous_page_number }}&sortby={{sortby}}">&lt;-</a>
+        {% endif %}
+
+        <span class="current">
+            Página {{ recursos_list.number }} de {{ recursos_list.paginator.num_pages }}
+        </span>
+
+        {% if recursos_list.has_next %}
+            <a href="?page={{ recursos_list.next_page_number }}&sortby={{sortby}}">-&gt;</a>
+        {% endif %}
+    </span> 
+    </div>
     {% if recursos_list %}
         <table class="table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Curso</th>
-              <th>Fecha de Creación</th>
-              <th>Proveedor</th>
-              <th>1&#170; Entrega</th>
+              <th>
+                Nombre
+                <a href="?page={{ recursos_list.number }}&sortby=nombre"><span class="glyphicon glyphicon-sort"></span></a>
+              </th>
+              <th>
+                Curso
+                <a href="?page={{ recursos_list.number }}&sortby=curso"><span class="glyphicon glyphicon-sort"></span></a>
+              </th>
+              <th>
+                Fecha de Creación
+                <a href="?page={{ recursos_list.number }}&sortby=creacion"><span class="glyphicon glyphicon-sort"></span></a>
+              </th>
+              <th>
+                Proveedor
+                <a href="?page={{ recursos_list.number }}&sortby=proveedor"><span class="glyphicon glyphicon-sort"></span></a>
+              </th>
+              <th>
+                Entrega Estimada
+                <a href="?page={{ recursos_list.number }}&sortby=entregaEstimada"><span class="glyphicon glyphicon-sort"></span></a>
+              </th>
+              <th>
+                Última Entrega
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -26,9 +59,10 @@
             <tr>
               <td><a href="{% url 'recursos:detalle' recurso.id %}">{{ recurso.nombre }}</a></td>
               <td>{{ recurso.curso.codigo }}</td>
-              <td>{{ recurso.fecha_creacion }}</td>
+              <td>{{ recurso.fecha_creacion | date:"d m 'y" }}</td>
               <td>{{ recurso.proveedor.get_full_name }}</td>
-              <td>{{ recurso.entrega_estimada | date:"DATE_FORMAT" }}</td>
+              <td>{{ recurso.entrega_estimada | date:"d m 'y" }}</td>
+              <td>{{ recurso.ultimaEntrega.fecha_entrega | date:"d m 'y"}}</td>
             </tr>
         {% endfor %}
           </tbody>

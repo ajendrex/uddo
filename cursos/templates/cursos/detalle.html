@@ -42,6 +42,10 @@
     </form>
   </div>
   <div class="col-md-2">
+  {% load mytags %}
+    {% ifusergroup DI %}
+      <button class="btn btn-primary" onclick="javascript: top.open('{% url 'recursos:crearRecurso' %}?curso={{ curso.id }}', '_self')">Crear Recurso</button>
+    {% endifusergroup %}
     <h5>Recursos creados para este curso:</h5>
     <ul>
       {% for recurso in recursos %}
@@ -49,7 +53,6 @@
       {% empty %}
         <li>No hay recursos</li>
       {% endfor %}
-      <button class="btn btn-primary" onclick="javascript: top.open('{% url 'recursos:crearRecurso' %}?curso={{ curso.id }}', '_self')">Crear Recurso</button>
     </ul>
   </div>
 </div>
