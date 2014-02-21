@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User, Group
 import sys
+from django.core.urlresolvers import reverse
+from cursos.models import Curso
+from django.http import HttpRequest
 
 def usuarioEsSupervisor(u):
   supervisoresGroup = Group.objects.get(name="Supervisores")
@@ -23,3 +26,12 @@ def usuarioEsDI(u):
 
 def usuarioEsInterno(u):
   return usuarioEsSupervisor(u) or usuarioEsCoordinador(u) or usuarioEsDI(u)
+
+def getCursoUrl(request, curso):
+  return request.build_absolute_uri(reverse('cursos:detalle', args=(curso.id,)))
+
+def getRecursoUrl(request, recurso):
+  return request.build_absolute_uri(reverse('recursos:detalle', args=(recurso.id,)))
+
+def getVersionUrl(request, version):
+  return request.build_absolute_uri(reverse('recursos:detalleVersionRecurso', args=(version.id,)))

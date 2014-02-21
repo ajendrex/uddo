@@ -15,6 +15,7 @@ from recursos.models import Recurso, ComentarioRecurso, InsumoRecurso, VersionRe
 from recursos.forms import RecursoForm, VersionForm, ComentarioVersionRecurso
 from cursos.models import Curso
 from utils.utils import *
+from utils.notificaciones import *
 
 @login_required
 def index(request):
@@ -110,6 +111,7 @@ def crearRecurso(request):
         recurso = recursoForm.save(commit=False)
         recurso.creador = request.user
         recurso.save()
+        notificarCreacionRecurso(request, recurso)
         for insumoForm in insumoFormset:
           if insumoForm.is_valid():
             insumoRecurso = insumoForm.save(commit=False)
@@ -147,6 +149,7 @@ def asignarProveedor(request, recurso_id):
       r = proveedorForm.save(commit=False)
       if r.proveedor != proveedorAnterior:
         r.entrega_estimada = None
+        notificarProveedorAsignado(request, r, proveedorAnterior)
       r.save()
       return redirect(reverse('recursos:detalle', args=(r.id,)))
     else:
@@ -176,6 +179,7 @@ def definirFechaEntrega(request, recurso_id):
       entregaForm = EntregaForm(request.POST, instance=recurso)
       if entregaForm.is_valid():
         entregaForm.save()
+        notificarAsignacionAceptada(request, recurso)
         return redirect(reverse('recursos:detalle', args=(recurso.id,)))
       else:
         objetos["mensaje_de_error"] = "Fecha ingresada no es válida."
@@ -203,9 +207,10 @@ def entregar(request, recurso_id):
         version.save()
         recurso.total_versiones += 1
         recurso.save()
+        notificarEntrega(request, version)
         return redirect(reverse('recursos:detalle', args=(recurso.id,)))
       else:
-        objetos["mensaje_de_error"] = "Hubo un error subiendo el archivo" + versionForm.errors
+        objetos["mensaje_de_error"] = "Hubo un error subiendo el archivo."
     else:
       objetos["recurso"] = recurso
       objetos["versionForm"] = VersionForm(instance=recurso)

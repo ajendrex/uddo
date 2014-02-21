@@ -10,6 +10,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from cursos.models import Curso, ComentarioCurso
 from cursos.forms import CursoForm
 from utils.utils import *
+from utils.notificaciones import *
 from recursos.models import Recurso
 
 # Create your views here.
@@ -100,6 +101,7 @@ def crearCurso(request):
         curso = cursoForm.save(commit=False)
         curso.owner = request.user
         curso.save()
+        notificarCreacionCurso(request, curso)
         return redirect(reverse('cursos:detalle', args=(curso.id,)))
       else:
         objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!."

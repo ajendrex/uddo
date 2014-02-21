@@ -100,3 +100,4 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 #Login
 LOGIN_URL = '/login'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
