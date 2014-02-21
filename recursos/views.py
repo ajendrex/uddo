@@ -85,17 +85,18 @@ def detalle(request, recurso_id):
 
 @login_required
 def comentar(request, recurso_id):
-  c = get_object_or_404(Recurso, pk=recurso_id)
+  recurso = get_object_or_404(Recurso, pk=recurso_id)
 
   if not request.user.is_authenticated():
-    return redirect('/login/?next=%s' % reverse('cursos:detalle', args=(c.id,)))
+    return redirect('/login/?next=%s' % reverse('recursos:detalle', args=(recurso.id,)))
 
   comentario = ComentarioRecurso()
   comentario.autor = request.user
-  comentario.recurso = c
+  comentario.recurso = recurso
   comentario.comentario = request.POST['texto']
   comentario.save()
-  return redirect(reverse('recursos:detalle', args=(c.id,)))
+  notificarComentarioRecurso(request, comentario)
+  return redirect(reverse('recursos:detalle', args=(recurso.id,)))
 
 @login_required
 def crearRecurso(request):
@@ -256,6 +257,7 @@ def comentarVersion(request, version_id):
   comentario.version = v
   comentario.comentario = request.POST['texto']
   comentario.save()
+  notificarComentarioVersion(request, comentario)
   return redirect(reverse('recursos:detalleVersionRecurso', args=(v.id,)))
 
 @login_required

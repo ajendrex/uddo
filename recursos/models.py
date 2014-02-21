@@ -56,6 +56,13 @@ class Recurso(models.Model):
       return True
     return self.entrega_estimada <= self.ultimaEntrega().fecha_entrega
 
+  def getComentaristas(self):
+    comentaristas = [self.recurso.creador, self.recurso.proveedor]
+    for comentario in self.comentariorecurso_set.all():
+      if (usuarioEsSupervisor(comentario.autor) or usuarioEsCoordinador(comentario.autor)) and comentario.autor not in comentaristas:
+        comentaristas.append(comentario.autor)
+    return comentaristas
+
 class InsumoRecurso(models.Model):
   archivo = models.FileField(upload_to="insumos/%Y/%m/%d/")
   recurso = models.ForeignKey(Recurso)
@@ -78,6 +85,13 @@ class VersionRecurso(models.Model):
 
   def aprobado(self):
     return self.aprobado_di and self.aprobado_profesor and self.aprobado_coordinador
+  
+  def getComentaristas(self):
+    comentaristas = [self.recurso.creador, self.proveedor]
+    for comentario in self.comentarioversionrecurso_set.all():
+      if (usuarioEsSupervisor(comentario.autor) or usuarioEsCoordinador(comentario.autor)) and comentario.autor not in comentaristas:
+        comentaristas.append(comentario.autor)
+    return comentaristas
 
 class Tag(models.Model):
   tag = models.CharField(max_length = 100, unique=True)

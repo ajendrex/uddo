@@ -52,3 +52,23 @@ def notificarEntrega(request, version):
   recursoReferencia = str(version.recurso) + " versión " + str(version.version) + " (" + getVersionUrl(request, version) + ")"
   msg = "Hola " + di.get_full_name() + ",\n\nte informamos que el proveedor " + proveedor.get_full_name() + " entregó el siguiente recurso: " + recursoReferencia + ".\n\nSaludos atentos."
   send_mail(asunto, msg, remitente, [di.email], fail_silently=False)
+
+def notificarComentarioRecurso(request, comentario):
+  nombreAutor = comentario.autor.get_full_name()
+  asunto = nombreAutor + " comentó un recurso en Unidad de Diseño y Desarrollo Online"
+  recursoReferencia = str(comentario.recurso) + " (" + getRecursoUrl(request, comentario.recurso) + ")"
+  participantes = comentario.recurso.getComentaristas()
+  for p in participantes:
+    if p != comentario.autor:
+      msg = "Hola " + p.get_full_name() + ",\n\n" + nombreAutor + " ha hecho un comentario para el recurso " + recursoReferencia + ".\n\n El comentario ingresado fué:\n\n\"" + comentario.comentario + "\".\n\nSaludos atentos."
+      send_mail(asunto, msg, remitente, [p.email], fail_silently=False)
+
+def notificarComentarioVersion(request, comentario):
+  nombreAutor = comentario.autor.get_full_name()
+  asunto = nombreAutor + " comentó la entrega de un recurso en Unidad de Diseño y Desarrollo Online"
+  recursoReferencia = str(comentario.version.recurso) + " versión " + str(comentario.version.version) + " (" + getVersionUrl(request, comentario.version) + ")"
+  participantes = comentario.version.getComentaristas()
+  for p in participantes:
+    if p != comentario.autor:
+      msg = "Hola " + p.get_full_name() + ",\n\n" + nombreAutor + " ha hecho un comentario para la entrega " + recursoReferencia + ".\n\n El comentario ingresado fué:\n\n\"" + comentario.comentario + "\".\n\nSaludos atentos."
+      send_mail(asunto, msg, remitente, [p.email], fail_silently=False)
