@@ -7,13 +7,37 @@
 {% block content %}
   <div class="row">
     <div class="col-md-8 col-md-offset-2">
+      <div name="paginador">
+       <span class="step-links">
+          {% if cursos_list.has_previous %}
+              <a href="?page={{ cursos_list.previous_page_number }}&sortby={{sortby}}">&lt;-</a>
+          {% endif %}
+
+          <span class="current">
+              Página {{ cursos_list.number }} de {{ cursos_list.paginator.num_pages }}
+          </span>
+
+          {% if cursos_list.has_next %}
+              <a href="?page={{ cursos_list.next_page_number }}&sortby={{sortby}}">-&gt;</a>
+          {% endif %}
+      </span> 
+      </div>
     {% if cursos_list %}
         <table class="table">
           <thead>
             <tr>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>DI</th>
+              <th>
+                Código
+                <a href="?page={{ cursos_list.number }}&sortby={% if sortby == 'codigo' %}-{% endif %}codigo"><span class="glyphicon glyphicon-sort"></span></a>
+              </th>
+              <th>
+                Nombre
+                <a href="?page={{ cursos_list.number }}&sortby={% if sortby == 'nombre' %}-{% endif %}nombre"><span class="glyphicon glyphicon-sort"></span></a>
+              </th>
+              <th>
+                DI
+                <a href="?page={{ cursos_list.number }}&sortby={% if sortby == 'di' %}-{% endif %}di"><span class="glyphicon glyphicon-sort"></span></a>
+              </th>
             </tr>
           </thead>
           <tbody>

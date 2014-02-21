@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext, loader
 from django.http import HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from cursos.models import Curso, ComentarioCurso
 from cursos.forms import CursoForm
@@ -16,15 +17,38 @@ from recursos.models import Recurso
 def index(request):
   u = request.user
   objetos = {}
+  columns = { 'codigo': "codigo",
+              '-codigo': "-codigo",
+              'nombre': "nombre",
+              '-nombre': "-nombre",
+              'di': "owner",
+              '-di': "-owner"
+            }
+  sortby = request.GET.get('sortby')
+  objetos["sortby"] = sortby
+  if sortby in columns:
+    sortString = columns[sortby]
+  else:
+    sortString = "?"
+
   if usuarioEsCoordinador(u) or usuarioEsSupervisor(u):
-    objetos["cursos_list"] = Curso.objects.all()
+    cursos_list = Curso.objects.all().order_by(sortString)
   elif usuarioEsProfesor(u):
-    objetos["cursos_list"] = Curso.objects.filter(profesor=u)
+    cursos_list = Curso.objects.filter(profesor=u).order_by(sortString)
   elif usuarioEsDI(u):
-    objetos["cursos_list"] = Curso.objects.filter(owner=u)
+    cursos_list = Curso.objects.filter(owner=u).order_by(sortString)
   else:
     objetos["mensaje_de_error"] = "No posee privilegios para ver esta página."
-      
+     
+  paginator = Paginator(cursos_list, 10)
+  page = request.GET.get('page')
+  try:
+    objetos["cursos_list"] = paginator.page(page)
+  except PageNotAnInteger:
+    objetos["cursos_list"] = paginator.page(1)
+  except EmptyPage:
+    objetos["cursos_list"] = paginator.page(paginator.num_pages)
+
   template = loader.get_template('cursos/index.html')
   context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
