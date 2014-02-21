@@ -31,23 +31,23 @@
             <tr>
               <th>
                 Nombre
-                <a href="?page={{ recursos_list.number }}&sortby=nombre"><span class="glyphicon glyphicon-sort"></span></a>
+                <a href="?page={{ recursos_list.number }}&sortby={% if sortby == 'nombre' %}-{% endif %}nombre"><span class="glyphicon glyphicon-sort"></span></a>
               </th>
               <th>
                 Curso
-                <a href="?page={{ recursos_list.number }}&sortby=curso"><span class="glyphicon glyphicon-sort"></span></a>
+                <a href="?page={{ recursos_list.number }}&sortby={% if sortby == 'curso' %}-{% endif %}curso"><span class="glyphicon glyphicon-sort"></span></a>
               </th>
               <th>
                 Fecha de Creación
-                <a href="?page={{ recursos_list.number }}&sortby=creacion"><span class="glyphicon glyphicon-sort"></span></a>
+                <a href="?page={{ recursos_list.number }}&sortby={% if sortby == 'creacion' %}-{% endif %}creacion"><span class="glyphicon glyphicon-sort"></span></a>
               </th>
               <th>
                 Proveedor
-                <a href="?page={{ recursos_list.number }}&sortby=proveedor"><span class="glyphicon glyphicon-sort"></span></a>
+                <a href="?page={{ recursos_list.number }}&sortby={% if sortby == 'proveedor' %}-{% endif %}proveedor"><span class="glyphicon glyphicon-sort"></span></a>
               </th>
               <th>
                 Entrega Estimada
-                <a href="?page={{ recursos_list.number }}&sortby=entregaEstimada"><span class="glyphicon glyphicon-sort"></span></a>
+                <a href="?page={{ recursos_list.number }}&sortby={% if sortby == 'entregaEstimada' %}-{% endif %}entregaEstimada"><span class="glyphicon glyphicon-sort"></span></a>
               </th>
               <th>
                 Última Entrega

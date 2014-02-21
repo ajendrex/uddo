@@ -21,10 +21,15 @@ def index(request):
   u = request.user
   objetos = {}
   columns = { 'nombre': "nombre",
+              '-nombre': "-nombre",
               'curso': "curso",
+              '-curso': "-curso",
               'creacion': "fecha_creacion",
+              '-creacion': "-fecha_creacion",
               'proveedor': "proveedor",
+              '-proveedor': "-proveedor",
               'entregaEstimada': "entrega_estimada",
+              '-entregaEstimada': "-entrega_estimada",
             }
   sortby = request.GET.get('sortby')
   objetos["sortby"] = sortby
