@@ -104,8 +104,7 @@ def crearCurso(request):
         notificarCreacionCurso(request, curso)
         return redirect(reverse('cursos:detalle', args=(curso.id,)))
       else:
-        objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!."
-        objetos["errores"] = cursoForm.errors
+        objetos["cursoForm"] = cursoForm
     else:
       objetos["cursoForm"] = CursoForm()
 
