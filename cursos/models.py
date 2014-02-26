@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class Curso(models.Model):
   owner = models.ForeignKey(User, related_name = "cursos_di")
   profesor = models.ForeignKey(User, null = True, related_name = "cursos_prof")
-  codigo = models.CharField(max_length = 20)
+  codigo = models.CharField(max_length = 20, unique=True)
   nombre = models.CharField(max_length = 200)
   fec_creacion = models.DateTimeField(auto_now_add = True)
   fec_modificacion = models.DateTimeField(auto_now = True)
