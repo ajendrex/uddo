@@ -12,13 +12,13 @@
 {% else %}
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
-  {% if cursoForm.errors %}
-    {% for error in cursoForm.non_field_errors %}
-      <div class="alert alert-error">
-        <strong>{{ error|escape }}</strong>
-      </div>
-    {% endfor %}
-  {% endif %}
+    {% if cursoForm.errors %}
+      {% for error in cursoForm.non_field_errors %}
+        <div class="alert alert-error">
+          <strong>{{ error|escape }}</strong>
+        </div>
+      {% endfor %}
+    {% endif %}
     <form action="{% url 'cursos:crearCurso' %}" method="post" enctype="multipart/form-data" role="form">
     {% csrf_token %}
       <!-- TODO: abrir form.as_p e insertar div con clase "form-group" -->

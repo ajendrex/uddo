@@ -122,7 +122,8 @@ def crearRecurso(request):
             insumoRecurso.save()
         return redirect(reverse('recursos:detalle', args=(recurso.id,)))
       else:
-        objetos["mensaje_de_error"] = "Los datos ingresados no son correctos!."
+        objetos["recursoForm"] = recursoForm
+        objetos["insumoFormset"] = insumoFormset
     else:
       if "curso" in request.GET:
         objetos["recursoForm"] = RecursoForm(initial={'curso':int(request.GET["curso"])})
@@ -130,7 +131,6 @@ def crearRecurso(request):
         objetos["recursoForm"] = RecursoForm()
       objetos["recursoForm"].fields["curso"].queryset = Curso.objects.filter(owner=request.user)
       objetos["insumoFormset"] = InsumoFormset()
-      objetos["insumoForm"] = InsumoFormset()[0]
 
   template = loader.get_template('recursos/crearRecurso.html')
   context = RequestContext(request, objetos)
