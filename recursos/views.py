@@ -51,6 +51,9 @@ def index(request):
       recursos_list = Recurso.objects.filter(creador=u).order_by(sortString)
     else:
       objetos["mensaje_de_error"] = "No posee privilegios para ver esta página."
+      template = loader.get_template('recursos/index.html')
+      context = RequestContext(request, objetos)
+      return HttpResponse(template.render(context))
   paginator = Paginator(recursos_list, 10)
   page = request.GET.get('page')
   try:
@@ -114,7 +117,7 @@ def crearRecurso(request):
         recurso.save()
         notificarCreacionRecurso(request, recurso)
         for insumoForm in insumoFormset:
-          if insumoForm.is_valid():
+          if insumoForm.is_valid() and not insumoForm.cleaned_data["DELETE"]:
             insumoRecurso = insumoForm.save(commit=False)
             if not insumoRecurso.archivo.name:
               continue

@@ -64,14 +64,14 @@ class Recurso(models.Model):
     return comentaristas
 
 class InsumoRecurso(models.Model):
-  archivo = models.FileField(upload_to="insumos/%Y/%m/%d/")
+  archivo = models.FileField(upload_to="insumos/%Y/%m/%d/", max_length=255)
   recurso = models.ForeignKey(Recurso)
 
   def __str__(self):
     return os.path.basename(self.archivo.name)
 
 class VersionRecurso(models.Model):
-  archivo = models.FileField(upload_to="versiones/%Y/%m/%d/")
+  archivo = models.FileField(upload_to="versiones/%Y/%m/%d/", max_length=255)
   fecha_entrega = models.DateTimeField(auto_now_add = True)
   recurso = models.ForeignKey(Recurso)
   version = models.IntegerField()
