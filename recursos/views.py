@@ -87,9 +87,6 @@ def detalle(request, recurso_id):
 def comentar(request, recurso_id):
   recurso = get_object_or_404(Recurso, pk=recurso_id)
 
-  if not request.user.is_authenticated():
-    return redirect('/login/?next=%s' % reverse('recursos:detalle', args=(recurso.id,)))
-
   comentario = ComentarioRecurso()
   comentario.autor = request.user
   comentario.recurso = recurso
@@ -133,6 +130,44 @@ def crearRecurso(request):
       objetos["insumoFormset"] = InsumoFormset()
 
   template = loader.get_template('recursos/crearRecurso.html')
+  context = RequestContext(request, objetos)
+  return HttpResponse(template.render(context))
+
+@login_required
+def editarRecurso(request, recurso_id):
+  recurso = get_object_or_404(Recurso, pk=recurso_id)
+  objetos = {}
+  objetos["recurso"] = recurso
+  u = request.user
+  if recurso.creador != u and not (usuarioEsSupervisor(u) or usuarioEsCoordinador(u)):
+      objetos["mensaje_de_error"] = "Usted no puede editar este recurso."
+  else:
+    InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso, extra=1)
+    if request.method == 'POST':
+      recursoForm = RecursoForm(request.POST, instance=recurso)
+      insumoFormset = InsumoFormset(request.POST, request.FILES, instance = recurso)
+      if recursoForm.is_valid():
+        recurso = recursoForm.save(commit=False)
+        recurso.save()
+        notificarCreacionRecurso(request, recurso)
+        for insumoForm in insumoFormset:
+          if insumoForm.is_valid():
+            insumoRecurso = insumoForm.save(commit=False)
+            if not insumoRecurso.archivo.name:
+              continue
+            ir = insumoRecurso.save()
+            if insumoRecurso.archivo.remove:
+              ir.delete()
+        return redirect(reverse('recursos:detalle', args=(recurso.id,)))
+      else:
+        objetos["recursoForm"] = recursoForm
+        objetos["insumoFormset"] = insumoFormset
+    else:
+      objetos["recursoForm"] = RecursoForm(instance=recurso)
+      objetos["recursoForm"].fields["curso"].queryset = Curso.objects.filter(owner=request.user)
+      objetos["insumoFormset"] = InsumoFormset(instance=recurso)
+
+  template = loader.get_template('recursos/editarRecurso.html')
   context = RequestContext(request, objetos)
   return HttpResponse(template.render(context))
 
