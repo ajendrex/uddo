@@ -152,15 +152,14 @@ def editarRecurso(request, recurso_id):
       if recursoForm.is_valid():
         recurso = recursoForm.save(commit=False)
         recurso.save()
-        notificarCreacionRecurso(request, recurso)
         for insumoForm in insumoFormset:
           if insumoForm.is_valid():
             insumoRecurso = insumoForm.save(commit=False)
             if not insumoRecurso.archivo.name:
               continue
-            ir = insumoRecurso.save()
-            if insumoRecurso.archivo.remove:
-              ir.delete()
+            insumoRecurso.save()
+            if insumoForm.cleaned_data["DELETE"]:
+              insumoRecurso.delete()
         return redirect(reverse('recursos:detalle', args=(recurso.id,)))
       else:
         objetos["recursoForm"] = recursoForm
