@@ -57,7 +57,9 @@ class Recurso(models.Model):
     return self.entrega_estimada <= self.ultimaEntrega().fecha_entrega
 
   def getComentaristas(self):
-    comentaristas = [self.recurso.creador, self.recurso.proveedor]
+    comentaristas = [self.creador]
+    if self.proveedor:
+      comentaristas.append(self.proveedor)
     for comentario in self.comentariorecurso_set.all():
       if (usuarioEsSupervisor(comentario.autor) or usuarioEsCoordinador(comentario.autor)) and comentario.autor not in comentaristas:
         comentaristas.append(comentario.autor)

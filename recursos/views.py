@@ -16,6 +16,7 @@ from recursos.forms import RecursoForm, VersionForm, ComentarioVersionRecurso
 from cursos.models import Curso
 from utils.utils import *
 from utils.notificaciones import *
+from pprint import *
 
 @login_required
 def index(request):
@@ -114,7 +115,7 @@ def crearRecurso(request):
         recurso.save()
         notificarCreacionRecurso(request, recurso)
         for insumoForm in insumoFormset:
-          if insumoForm.is_valid() and not insumoForm.cleaned_data["DELETE"]:
+          if insumoForm.is_valid() and "DELETE" in insumoForm.cleaned_data and not insumoForm.cleaned_data["DELETE"]:
             insumoRecurso = insumoForm.save(commit=False)
             if not insumoRecurso.archivo.name:
               continue
