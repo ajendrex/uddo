@@ -14,7 +14,9 @@
           {% endif %}
 
           <span class="current">
+            {% if cursos_list %}
               Página {{ cursos_list.number }} de {{ cursos_list.paginator.num_pages }}
+            {% endif %}
           </span>
 
           {% if cursos_list.has_next %}

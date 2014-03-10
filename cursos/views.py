@@ -41,14 +41,17 @@ def index(request):
   else:
     objetos["mensaje_de_error"] = "No posee privilegios para ver esta página."
      
-  paginator = Paginator(cursos_list, 10)
-  page = request.GET.get('page')
   try:
-    objetos["cursos_list"] = paginator.page(page)
-  except PageNotAnInteger:
-    objetos["cursos_list"] = paginator.page(1)
-  except EmptyPage:
-    objetos["cursos_list"] = paginator.page(paginator.num_pages)
+    paginator = Paginator(cursos_list, 10)
+    page = request.GET.get('page')
+    try:
+      objetos["cursos_list"] = paginator.page(page)
+    except PageNotAnInteger:
+      objetos["cursos_list"] = paginator.page(1)
+    except EmptyPage:
+      objetos["cursos_list"] = paginator.page(paginator.num_pages)
+  except:
+    pass
 
   template = loader.get_template('cursos/index.html')
   context = RequestContext(request, objetos)
