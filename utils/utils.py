@@ -5,23 +5,23 @@ from cursos.models import Curso
 from django.http import HttpRequest
 
 def usuarioEsSupervisor(u):
-  supervisoresGroup = Group.objects.get_or_create(name="Supervisores")
+  supervisoresGroup, created = Group.objects.get_or_create(name="Supervisores")
   return supervisoresGroup in u.groups.all()
 
 def usuarioEsCoordinador(u):
-  coordinadoresGroup = Group.objects.get_or_create(name="Coordinadores")
+  coordinadoresGroup, created = Group.objects.get_or_create(name="Coordinadores")
   return coordinadoresGroup in u.groups.all()
 
 def usuarioEsProfesor(u):
-  profesoresGroup = Group.objects.get_or_create(name="Profesores")
+  profesoresGroup, created = Group.objects.get_or_create(name="Profesores")
   return profesoresGroup in u.groups.all()
 
 def usuarioEsProveedor(u):
-  proveedoresGroup = Group.objects.get_or_create(name="Proveedores")
+  proveedoresGroup, created = Group.objects.get_or_create(name="Proveedores")
   return proveedoresGroup in u.groups.all()
 
 def usuarioEsDI(u):
-  diGroup = Group.objects.get_or_create(name="DI")
+  diGroup, created = Group.objects.get_or_create(name="DI")
   return diGroup in u.groups.all()
 
 def usuarioEsInterno(u):
