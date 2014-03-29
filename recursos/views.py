@@ -105,7 +105,7 @@ def crearRecurso(request):
   if not usuarioEsDI(request.user):
     objetos["mensaje_de_error"] = "Usted no posee privilegios para crear un recurso."
   else:
-    InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso, extra=1)
+    InsumoFormset = inlineformset_factory(Recurso, InsumoRecurso, exclude=(), extra=1)
     if request.method == 'POST':
       recursoForm = RecursoForm(request.POST)
       insumoFormset = InsumoFormset(request.POST, request.FILES)
