@@ -27,7 +27,7 @@
       </tr>
     </table>
     <ul>
-    {% for comentario in curso.comentariocurso_set.all %}
+    {% for comentario in curso.comentarios.all %}
       <li>{{ comentario.owner.first_name }} {{ comentario.owner.last_name }} dijo {{ comentario.comentario }} el <small>{{ comentario.fec_creacion|date:"DATE_FORMAT" }}</small></li>
     {% endfor %}
     </ul>

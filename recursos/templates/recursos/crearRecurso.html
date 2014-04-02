@@ -48,7 +48,7 @@
     var form = '{{insumoFormset.empty_form| crispy |escapejs}}'.replace(/__prefix__/g, form_count);
     $('.multiField').append(form)
     form_count++;
-    $('#id_insumorecurso_set-TOTAL_FORMS').val(form_count);
+    $('#id_insumos-TOTAL_FORMS').val(form_count);
   }
 </script>
 {% endblock %}

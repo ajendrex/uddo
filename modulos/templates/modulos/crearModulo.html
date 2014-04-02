@@ -1,0 +1,41 @@
+{% extends "modulos/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    <h1>Nuevo Modulo en {{curso}}</h1>
+{% endblock %}
+
+{% block content %}
+{% if mensaje_de_error %}
+  <p><strong>{{ mensaje_de_error }}</strong></p>
+{% else %}
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    {% if moduloForm.errors %}
+      {% for error in moduloForm.non_field_errors %}
+        <div class="alert alert-error">
+          <strong>{{ error|escape }}</strong>
+        </div>
+      {% endfor %}
+    {% endif %}
+    <form action="{% url 'modulos:crearModulo' curso.id %}" method="post" role="form">
+    {% csrf_token %}
+      {{ moduloForm | crispy }}
+      <hr>
+      <button type="button" class="btn btn-default" onclick="javascript: top.open('{% url 'modulos:detalle' curso.id %}','_self')">Cancelar</button>
+      <button type="submit" value="Crear" class="btn btn-primary">Crear</button>
+    </form>
+    <hr>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+  {% for field in moduloForm %}
+    $("#{{ field.auto_id }}").addClass("form-control");
+  {% endfor %}
+</script>
+{% endblock %}

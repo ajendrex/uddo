@@ -14,9 +14,12 @@ class Curso(models.Model):
   def __str__(self):
     return self.codigo + " - " + self.nombre
 
+  def nModulos(self):
+    return self.modulos.count()
+
 class ComentarioCurso(models.Model):
-  owner = models.ForeignKey(User)
-  curso = models.ForeignKey(Curso)
+  owner = models.ForeignKey(User, related_name = "comentariosEnCursos")
+  curso = models.ForeignKey(Curso, related_name = "comentarios")
   estado = models.CharField(max_length = 2,
                             choices = (('NI', 'No Iniciado'),
                                        ('DC', 'Diseño Conceptual'),
@@ -30,12 +33,3 @@ class ComentarioCurso(models.Model):
 
   def __str__(self):
     return "comentario de " + str(self.owner) + " en " + str(self.curso)
-
-class Modulo(models.Model):
-  curso = models.ForeignKey(Curso)
-  orden = models.IntegerField()
-  titulo = models.CharField(max_length = 200)
-  nombreCorto = models.CharField(max_length = 20)
-
-  def __str__(self):
-    return self.nombreCorto

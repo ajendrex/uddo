@@ -11,7 +11,7 @@ import os
 # Create your models here.
 class Recurso(models.Model):
   nombre = models.CharField(max_length = 100)
-  curso = models.ForeignKey(Curso, null=True)
+  curso = models.ForeignKey(Curso, null=True, related_name="recursos")
   creador = models.ForeignKey(User, related_name = "recursos_di")
   tipo = models.CharField(max_length = 3,
                           choices = (('INT', "Interactivo"),
@@ -41,14 +41,14 @@ class Recurso(models.Model):
     return self.nombre
 
   def cantEntregas(self):
-    return self.versionrecurso_set.count()
+    return self.versiones.count()
 
   def sinEntregas(self):
     return not self.cantEntregas()
 
   def ultimaEntrega(self):
     if self.cantEntregas():
-      return self.versionrecurso_set.all()[self.cantEntregas() - 1]
+      return self.versiones.all()[self.cantEntregas() - 1]
     return None
 
   def entregaAtrasada(self):
@@ -60,14 +60,14 @@ class Recurso(models.Model):
     comentaristas = [self.creador]
     if self.proveedor:
       comentaristas.append(self.proveedor)
-    for comentario in self.comentariorecurso_set.all():
+    for comentario in self.comentarios.all():
       if (usuarioEsSupervisor(comentario.autor) or usuarioEsCoordinador(comentario.autor)) and comentario.autor not in comentaristas:
         comentaristas.append(comentario.autor)
     return comentaristas
 
 class InsumoRecurso(models.Model):
   archivo = models.FileField(upload_to="insumos/%Y/%m/%d/", max_length=255)
-  recurso = models.ForeignKey(Recurso)
+  recurso = models.ForeignKey(Recurso, related_name="insumos")
 
   def __str__(self):
     return os.path.basename(self.archivo.name)
@@ -75,9 +75,9 @@ class InsumoRecurso(models.Model):
 class VersionRecurso(models.Model):
   archivo = models.FileField(upload_to="versiones/%Y/%m/%d/", max_length=255)
   fecha_entrega = models.DateTimeField(auto_now_add = True)
-  recurso = models.ForeignKey(Recurso)
+  recurso = models.ForeignKey(Recurso, related_name="versiones")
   version = models.IntegerField()
-  proveedor = models.ForeignKey(User)
+  proveedor = models.ForeignKey(User, related_name="entregas")
   aprobado_di = models.BooleanField(default=False)
   aprobado_profesor = models.BooleanField(default=False)
   aprobado_coordinador = models.BooleanField(default=False)
@@ -90,7 +90,7 @@ class VersionRecurso(models.Model):
   
   def getComentaristas(self):
     comentaristas = [self.recurso.creador, self.proveedor]
-    for comentario in self.comentarioversionrecurso_set.all():
+    for comentario in self.comentarios.all():
       if (usuarioEsSupervisor(comentario.autor) or usuarioEsCoordinador(comentario.autor)) and comentario.autor not in comentaristas:
         comentaristas.append(comentario.autor)
     return comentaristas
@@ -100,8 +100,8 @@ class Tag(models.Model):
   recursos = models.ManyToManyField(Recurso, related_name="tags")
 
 class ComentarioRecurso(models.Model):
-  autor = models.ForeignKey(User, null=True)
-  recurso = models.ForeignKey(Recurso)
+  autor = models.ForeignKey(User, null=True, related_name="comentariosEnRecursos")
+  recurso = models.ForeignKey(Recurso, related_name="comentarios")
   comentario = models.TextField()
   fec_creacion = models.DateTimeField(auto_now_add = True)
 
@@ -109,8 +109,8 @@ class ComentarioRecurso(models.Model):
     return usuarioEsProveedor(self.autor)
 
 class ComentarioVersionRecurso(models.Model):
-  autor = models.ForeignKey(User, null=True)
-  version = models.ForeignKey(VersionRecurso)
+  autor = models.ForeignKey(User, null=True, related_name="comentariosEnEntregas")
+  version = models.ForeignKey(VersionRecurso, related_name="comentarios")
   comentario = models.TextField()
   fec_creacion = models.DateTimeField(auto_now_add = True)
 
