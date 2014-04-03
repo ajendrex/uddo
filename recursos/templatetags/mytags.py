@@ -75,3 +75,15 @@ class NotGroupCheckNode(template.Node):
         if group in user.groups.all():
             return ''
         return self.nodelist.render(context)
+
+def key(d, key_name):
+    try:
+        value = d[key_name]
+        print("hola mundo")
+    except KeyError:
+        from django.conf import settings
+
+        value = settings.TEMPLATE_STRING_IF_INVALID
+
+    return value
+key = register.filter('key', key)

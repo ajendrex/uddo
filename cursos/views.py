@@ -71,7 +71,7 @@ def detalle(request, curso_id):
   elif not usuarioEsInterno(u):
     objetos["mensaje_de_error"] = "Usted no tiene privilegios para ver este elemento."
 
-  objetos["recursos"] = Recurso.objects.filter(curso=c)
+  objetos["recursos"] = c.recursos.all()
 
   template = loader.get_template('cursos/detalle.html')
   context = RequestContext(request, objetos)

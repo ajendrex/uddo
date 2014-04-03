@@ -33,7 +33,7 @@
           <td rowspan=2>
             <ul>
               {% load mytags %}
-              {% for insumo in recurso.insumorecurso_set.all %}
+              {% for insumo in recurso.insumos.all %}
                 <li><a href="{{ insumo.archivo.url }}">{{ insumo }}</a></li>
               {% empty %}
                 <li>No hay insumos.</li>
@@ -73,7 +73,7 @@
           <th>Entregas:</th>
           <td>
             <ul>
-              {% for version in recurso.versionrecurso_set.all %}
+              {% for version in recurso.versiones.all %}
                 <li><a href="{% url 'recursos:detalleVersionRecurso' version.id %}">{{ version }}</a>
                 {% if version.aprobado %}
                   (aprobado)
@@ -90,7 +90,7 @@
         </tr>
       </table>
       <ul>
-      {% for comentario in recurso.comentariorecurso_set.all %}
+      {% for comentario in recurso.comentarios.all %}
         <li><small>
           {% ifusergroup Profesores %}
             {% if comentario.autorEsProveedor %}

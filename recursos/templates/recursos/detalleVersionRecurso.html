@@ -58,7 +58,7 @@
         </tr>
       </table>
       <ul>
-      {% for comentario in version.comentarioversionrecurso_set.all %}
+      {% for comentario in version.comentarios.all %}
         <li><small>
           {% ifusergroup Profesores %}
             {% if comentario.autorEsProveedor %}
