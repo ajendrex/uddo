@@ -1,0 +1,64 @@
+{% extends "modulos/base.html" %}
+{% load mytags %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+  <h1>Modulos para {{curso}}</h1>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-11">
+    {% if modulos_list %}
+      <ul class="nav nav-tabs">
+        {% for modulo in modulos_list %}
+              <li{% if forloop.first %} class="active"{% endif %}>
+                <a class="tab" target="modulo_{{modulo.id}}" href="#modulo_{{ modulo.id }}" data-toggle="tab">{{ modulo.nombre_corto }}</a>
+              </li>
+        {% endfor %}
+      </ul>
+      <div class="tab-content">
+        {% for modulo in modulos_list %}
+          <div class="tab-pane fade{% if forloop.first %} in active{% endif %}" id="modulo_{{ modulo.id }}">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-2" style="border-right: 1px solid #ccc;">
+                    <ul id="lista_paginas_modulo_{{modulo.id}}"  class="nav nav-pills nav-stacked">
+                    {% for pagina in modulo.paginas.all %}
+                      <li{% if forloop.first %} class="active"{% endif %}>
+                        <a class="tag" target="pagina_{{pagina.id}}" href="#pagina_{{pagina.id}}" data-toggle="tab">{{ pagina.nombre_archivo|basename }}</a>
+                      </li>
+                    {% endfor %}
+                    </ul>
+                    <button class="btn btn-success" onclick="javascript: addPagina({{modulo.id}})">Nueva Página</button>
+                </div>
+                <div class="col-md-10 tab-content">
+                  {% for pagina in modulo.paginas.all %}
+                    <div class="tab-pane fade{% if forloop.first %} in active{% endif %}" id="pagina_{{ pagina.id }}">
+                      {{ paginaForms | key:modulo.id | key:pagina.id }}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+        <p>No hay modulos creados.</p>
+    {% endif %}
+    </div>
+    <div class="col-md-1">
+      <a class="btn btn-primary" href="{% url 'modulos:crearModulo' curso.id %}'">Crear Módulo</a>
+    </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    function addPagina(modulo_id) {
+      
+    }
+  </script>
+{% endblock %}
