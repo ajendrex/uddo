@@ -5,6 +5,12 @@ from pprint import *
 
 remitente = 'notificaciones-uddo@unab.cl'
 
+def buildRecursoReferencia(request, recurso):
+  return str(recurso) + " (" + getRecursoUrl(request, recurso) + ")"
+
+def buildVersionReferencia(request, version):
+  return str(version.recurso) + " versión " + str(version.version) + " (" + getVersionUrl(request, version) + ")"
+
 def notificarCreacionCurso(request, curso):
   asuntoCursoCreado = "Curso Creado en Unidad de Diseño y Desarrollo Online"
   di = curso.owner
@@ -18,7 +24,7 @@ def notificarCreacionCurso(request, curso):
 def notificarCreacionRecurso(request, recurso):
   asuntoRecursoCreado = "Recurso Creado en Unidad de Diseño y Desarrollo Online"
   di = recurso.creador
-  recursoReferencia = str(recurso) + " (" + getRecursoUrl(request, recurso) + ")"
+  recursoReferencia = buildRecursoReferencia(request, recurso)
   msg = "Hola " + di.get_full_name() + ",\n\nel recurso " + recursoReferencia + " ha sido creado exitosamente.\n\nSaludos atentos."
   send_mail(asuntoRecursoCreado, msg, remitente, [di.email], fail_silently=True)
 
@@ -26,7 +32,7 @@ def notificarProveedorAsignado(request, recurso, proveedorAnterior):
   asuntoProveedorAsignado = "Proveedor Asignado en Unidad de Diseño y Desarrollo Online"
   di = recurso.creador
   proveedor = recurso.proveedor
-  recursoReferencia = str(recurso) + " (" + getRecursoUrl(request, recurso) + ")"
+  recursoReferencia = buildRecursoReferencia(request, recurso)
   if proveedorAnterior:
     msg = "Hola " + proveedorAnterior.get_full_name() + ",\n\nle informamos que, de acuerdo a nuestros registros, usted ya no debe producir el recurso de aprendizaje " + recursoReferencia + ". Esto puede deberse a distintas razones; si usted no sabe cuál es, puede contactarse el coordinador de recursos de la Unidad de Diseño y Desarrollo Online y saber más detalles.\n\nSaludos atentos."
     send_mail(asuntoProveedorAsignado, msg, remitente, [proveedorAnterior.email], fail_silently=True)
@@ -42,7 +48,7 @@ def notificarAsignacionAceptada(request, recurso):
   asunto = "Proveedor acepta asignación de recurso en Unidad de Diseño y Desarrollo Online"
   di = recurso.creador
   proveedor = recurso.proveedor
-  recursoReferencia = str(recurso) + " (" + getRecursoUrl(request, recurso) + ")"
+  recursoReferencia = buildRecursoReferencia(request, recurso)
   msg = "Hola " + di.get_full_name() + ",\n\nte informamos que el proveedor " + proveedor.get_full_name() + " aceptó la producción del recurso de aprendizaje " + recursoReferencia + ", definiendo como fecha de entrega estimada " + str(recurso.entrega_estimada) + ".\n\nSaludos atentos."
   send_mail(asunto, msg, remitente, [di.email], fail_silently=True)
 
@@ -50,14 +56,14 @@ def notificarEntrega(request, version):
   asunto = "Proveedor entrega nueva versión de recurso en Unidad de Diseño y Desarrollo Online"
   di = version.recurso.creador
   proveedor = version.proveedor
-  recursoReferencia = str(version.recurso) + " versión " + str(version.version) + " (" + getVersionUrl(request, version) + ")"
+  recursoReferencia = buildVersionReferencia(request, version)
   msg = "Hola " + di.get_full_name() + ",\n\nte informamos que el proveedor " + proveedor.get_full_name() + " entregó el siguiente recurso: " + recursoReferencia + ".\n\nSaludos atentos."
   send_mail(asunto, msg, remitente, [di.email], fail_silently=True)
 
 def notificarComentarioRecurso(request, comentario):
   nombreAutor = comentario.autor.get_full_name()
   asunto = nombreAutor + " comentó un recurso en Unidad de Diseño y Desarrollo Online"
-  recursoReferencia = str(comentario.recurso) + " (" + getRecursoUrl(request, comentario.recurso) + ")"
+  recursoReferencia = buildRecursoReferencia(comentario.recurso)
   participantes = comentario.recurso.getComentaristas()
   for p in participantes:
     if p != comentario.autor:
@@ -67,9 +73,19 @@ def notificarComentarioRecurso(request, comentario):
 def notificarComentarioVersion(request, comentario):
   nombreAutor = comentario.autor.get_full_name()
   asunto = nombreAutor + " comentó la entrega de un recurso en Unidad de Diseño y Desarrollo Online"
-  recursoReferencia = str(comentario.version.recurso) + " versión " + str(comentario.version.version) + " (" + getVersionUrl(request, comentario.version) + ")"
+  recursoReferencia = buildVersionReferencia(comentario.version)
   participantes = comentario.version.getComentaristas()
   for p in participantes:
     if p != comentario.autor:
-      msg = "Hola " + p.get_full_name() + ",\n\n" + nombreAutor + " ha hecho un comentario para la entrega " + recursoReferencia + ".\n\n El comentario ingresado fué:\n\n\"" + comentario.comentario + "\".\n\nSaludos atentos."
+      msg = "Hola " + p.get_full_name() + ",\n\n" + nombreAutor + " ha hecho un comentario para la entrega de " + recursoReferencia + ".\n\n El comentario ingresado fué:\n\n\"" + comentario.comentario + "\".\n\nSaludos atentos."
       send_mail(asunto, msg, remitente, [p.email], fail_silently=True)
+
+def notificarAprobacionEntrega(request, version):
+  asunto = "Entrega aprobada en Unidad de Diseño y Desarrollo Online"
+  di = version.recurso.creador
+  proveedor = version.proveedor
+  recursoReferencia = buildVersionReferencia(request, version)
+  msg = "Hola " + di.get_full_name() + ",\n\n" + "te informamos que el recurso " + recursoReferencia + " ya cuenta con todas las aprobaciones.\n\nSaludos atentos."
+  send_mail(asunto, msg, remitente, [di.email], fail_silently=True)
+  msg = "Hola " + proveedor.get_full_name() + ",\n\n" + "te informamos que el recurso " + recursoReferencia + " ya cuenta con todas las aprobaciones.\n\nSaludos atentos."
+  send_mail(asunto, msg, remitente, [proveedor.email], fail_silently=True)

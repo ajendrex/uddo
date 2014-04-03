@@ -310,5 +310,8 @@ def aprobarVersion(request, version_id):
   if usuarioEsCoordinador(u):
     v.aprobado_coordinador = True
 
+  if v.aprobado():
+    notificarAprobacionEntrega(request, v)
+
   v.save()
   return redirect(reverse('recursos:detalleVersionRecurso', args=(v.id,)))
